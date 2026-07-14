@@ -1,4 +1,4 @@
 route_id,stop_order,segment_id,planned_at_kst
 demo-route-001,1,djtram-z01-ae5876728c09,2026-07-15T09:00:00+09:00
 demo-route-001,2,djtram-z01-b199e8cb7b67,2026-07-15T09:10:00+09:00
-demo-route-001,3,djtram-z12-e831632536b6,2026-07-15T09:30:00+09:00
+demo-route-001,3,djtram-z12-517b6a934e1f,2026-07-15T09:30:00+09:00

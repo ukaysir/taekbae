@@ -151,6 +151,38 @@ class FinalizationTests(unittest.TestCase):
         self.assertIn("mapping_gate_2_not_passed", report["preflight"]["blockers"])
         self.assertFalse(report["frozen_database_created"])
 
+    def test_missing_exposure_contract_blocks_before_freeze(self) -> None:
+        connection = connect(self.db_path)
+        connection.close()
+        self.route_input.parent.mkdir(parents=True, exist_ok=True)
+        self.route_input.write_text(
+            "route_id,stop_order,segment_id,planned_at_kst\n"
+            "route-1,1,segment-a,2026-07-17T10:00:00+09:00\n",
+            encoding="utf-8",
+        )
+        exposure_validation = self.root / "outputs/tables/exposure_validation.json"
+        self._write_json(
+            exposure_validation,
+            {
+                "status": "valid",
+                "store_source": {
+                    "valid_coordinate_rows": 1,
+                    "invalid_coordinate_rows": 0,
+                },
+                "event_count": 1,
+                "segment_count": 1,
+            },
+        )
+
+        report = self._run(
+            exposure_validation_path=exposure_validation,
+            exposure_path=self.root / "outputs/tables/missing_segment_exposure.csv",
+        )
+
+        self.assertEqual("blocked", report["status"])
+        self.assertIn("exposure_segment_file_missing", report["preflight"]["blockers"])
+        self.assertFalse(report["frozen_database_created"])
+
     def test_ready_data_freezes_evaluates_and_hashes_artifacts(self) -> None:
         connection = connect(self.db_path)
         try:

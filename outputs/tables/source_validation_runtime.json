@@ -1,5 +1,5 @@
 {
-  "tested_at_kst": "2026-07-15T01:22:17.4718293+09:00",
+  "tested_at_kst": "2026-07-15T01:56:33.6585262+09:00",
   "credential": {
     "environment_variable": "DATA_GO_KR_SERVICE_KEY",
     "present": true,
@@ -35,9 +35,9 @@
       ],
       "exit_code": 0,
       "latest_run_status": "success",
-      "latest_observed_at_kst": "2026-07-15T01:21:48+09:00",
-      "snapshots": 10,
-      "records": 410,
+      "latest_observed_at_kst": "2026-07-15T01:51:48+09:00",
+      "snapshots": 13,
+      "records": 533,
       "segments": 41,
       "operational_usable": true
     },
@@ -47,6 +47,22 @@
       "sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
       "expected_sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
       "hash_verified": true
+    },
+    "commercial_exposure": {
+      "dataset_id": "15083033",
+      "source_date": "2026-03-31",
+      "source_rows": 78607,
+      "valid_coordinate_rows": 78607,
+      "event_count": 3,
+      "segment_count": 10,
+      "event_exposure": {
+        "tram-z01-01": 69,
+        "tram-z01-02": 12,
+        "tram-z12-01": 994
+      },
+      "exit_code": 0,
+      "operational_usable": true,
+      "meaning": "250m 내 영업 중 상가 수; 실제 택배 물량·주문량 아님"
     },
     "tram_event_scope_mapping": {
       "exit_code": 0,

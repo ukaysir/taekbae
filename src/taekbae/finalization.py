@@ -13,6 +13,7 @@ from taekbae.quality import build_quality_report
 from taekbae.risk import (
     enrich_route,
     latest_risk_rows,
+    load_segment_exposure,
     load_route_csv,
     write_risk_csv,
     write_risk_json,
@@ -129,6 +130,42 @@ def _mapping_validation_issues(
     return issues
 
 
+def _exposure_validation_issues(report: dict[str, Any]) -> list[str]:
+    issues: list[str] = []
+    if report.get("status") != "valid":
+        issues.append("exposure_status_not_valid")
+    source = report.get("store_source")
+    if not isinstance(source, dict):
+        issues.append("exposure_store_source_missing")
+    else:
+        if int(source.get("valid_coordinate_rows") or 0) < 1:
+            issues.append("exposure_has_no_valid_store_coordinates")
+        if int(source.get("invalid_coordinate_rows") or 0) > 0:
+            issues.append("exposure_has_invalid_coordinates")
+    if int(report.get("event_count") or 0) < 1:
+        issues.append("exposure_has_no_events")
+    if int(report.get("segment_count") or 0) < 1:
+        issues.append("exposure_has_no_segments")
+    return issues
+
+
+def _exposure_file_issues(
+    path: Path | None, report: dict[str, Any] | None
+) -> list[str]:
+    if path is None:
+        return []
+    if not path.is_file():
+        return ["exposure_segment_file_missing"]
+    try:
+        rows = load_segment_exposure(path)
+    except (OSError, ValueError):
+        return ["exposure_segment_file_invalid"]
+    expected = int((report or {}).get("segment_count") or 0)
+    if expected and len(rows) != expected:
+        return ["exposure_segment_count_mismatch"]
+    return []
+
+
 def _quality_findings(quality: dict[str, Any], *, source: str) -> tuple[list[str], list[str]]:
     blockers: list[str] = []
     warnings: list[str] = []
@@ -199,6 +236,8 @@ def finalize_snapshot(
     source_validation_path: Path,
     mapping_validation_path: Path,
     mapping_evidence_path: Path,
+    exposure_validation_path: Path | None = None,
+    exposure_path: Path | None = None,
     route_input_path: Path,
     status_output: Path,
     manifest_output: Path,
@@ -227,6 +266,11 @@ def finalize_snapshot(
     source_validation = _read_json(source_validation_path)
     mapping_validation = _read_json(mapping_validation_path)
     mapping_evidence = _read_json(mapping_evidence_path)
+    exposure_validation = (
+        _read_json(exposure_validation_path)
+        if exposure_validation_path is not None
+        else None
+    )
 
     connection = connect(db_path)
     try:
@@ -249,11 +293,19 @@ def finalize_snapshot(
         max_age_hours=max_validation_age_hours,
     )
     mapping_blockers = _mapping_validation_issues(mapping_validation, mapping_evidence)
+    exposure_blockers = (
+        _exposure_validation_issues(exposure_validation)
+        if exposure_validation is not None
+        else []
+    )
+    exposure_blockers += _exposure_file_issues(exposure_path, exposure_validation)
     quality_blockers, quality_warnings = _quality_findings(quality, source=source)
     data_blockers = [
         f"readiness:{name}" for name in readiness.get("missing_requirements", [])
     ]
-    non_data_blockers = source_blockers + mapping_blockers + quality_blockers
+    non_data_blockers = (
+        source_blockers + mapping_blockers + exposure_blockers + quality_blockers
+    )
     blockers = data_blockers + non_data_blockers
     warnings = source_warnings + quality_warnings
 
@@ -272,6 +324,11 @@ def finalize_snapshot(
             "source_validation": _relative(source_validation_path, repo_root),
             "mapping_validation": _relative(mapping_validation_path, repo_root),
             "mapping_evidence_validation": _relative(mapping_evidence_path, repo_root),
+            "exposure_validation": (
+                _relative(exposure_validation_path, repo_root)
+                if exposure_validation_path is not None
+                else None
+            ),
         },
     }
     if blockers:
@@ -330,11 +387,16 @@ def finalize_snapshot(
             min_distinct_dates=min_distinct_dates,
             model_output=model_output,
         )
-        risk_rows = latest_risk_rows(frozen_connection, readiness=frozen_readiness)
+        risk_rows = latest_risk_rows(
+            frozen_connection,
+            readiness=frozen_readiness,
+            exposure_path=exposure_path,
+        )
         route_rows = enrich_route(
             frozen_connection,
             load_route_csv(route_input_path),
             readiness=frozen_readiness,
+            exposure_path=exposure_path,
         )
     finally:
         frozen_connection.close()
@@ -406,7 +468,12 @@ def finalize_snapshot(
         mapping_validation_path,
         mapping_evidence_path,
         route_input_path,
-    ] + list(provenance_paths)
+    ]
+    if exposure_validation_path is not None:
+        artifact_paths.append(exposure_validation_path)
+    if exposure_path is not None:
+        artifact_paths.append(exposure_path)
+    artifact_paths += list(provenance_paths)
     artifacts = [_artifact(path, root=repo_root) for path in artifact_paths]
     manifest = {
         "schema_version": FINALIZATION_SCHEMA_VERSION,
@@ -416,6 +483,11 @@ def finalize_snapshot(
         "readiness": frozen_readiness,
         "quality_summary": frozen_quality.get("overall", {}),
         "mapping_gate_2_status": mapping_validation.get("gate_2_status"),
+        "exposure_status": (
+            exposure_validation.get("status")
+            if exposure_validation is not None
+            else "not_configured"
+        ),
         "verified_scope_events": mapping_validation.get("verified_high_scope_events", []),
         "model": {
             "status": model_report.get("status"),

@@ -10,7 +10,7 @@
   ],
   "finalized": false,
   "frozen_database_created": false,
-  "generated_at_kst": "2026-07-15T01:22:28+09:00",
+  "generated_at_kst": "2026-07-15T01:56:34+09:00",
   "metric": "speed_kmh",
   "model_evaluated": false,
   "prediction_fields_active": false,
@@ -21,6 +21,7 @@
       "readiness:distinct_dates",
       "readiness:forecast_examples"
     ],
+    "exposure_validation": "outputs/tables/exposure_validation.json",
     "mapping_evidence_validation": "outputs/tables/mapping_evidence_validation.json",
     "mapping_validation": "outputs/tables/mapping_validation.json",
     "source_validation": "outputs/tables/source_validation_runtime.json",
@@ -33,13 +34,13 @@
     "actual": {
       "distinct_dates": 1,
       "first_observed_at_kst": "2026-07-15T00:01:35+09:00",
-      "forecast_examples": 164,
-      "last_observed_at_kst": "2026-07-15T01:21:48+09:00",
+      "forecast_examples": 287,
+      "last_observed_at_kst": "2026-07-15T01:51:48+09:00",
       "median_interval_minutes": 10.0,
-      "records": 410,
+      "records": 533,
       "segments": 41,
-      "snapshots": 10,
-      "span_hours": 1.337
+      "snapshots": 13,
+      "span_hours": 1.837
     },
     "checks": {
       "distinct_dates": false,

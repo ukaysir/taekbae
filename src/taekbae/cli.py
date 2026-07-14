@@ -11,6 +11,7 @@ from pathlib import Path
 
 from taekbae.analysis import assess_forecast_readiness, evaluate_forecast_models, write_report
 from taekbae.config import DEFAULT_DB_PATH, KST, RAW_ROOT, REPO_ROOT, ensure_data_dirs, require_env
+from taekbae.exposure import build_exposure_report, write_exposure_outputs
 from taekbae.finalization import finalize_snapshot
 from taekbae.mapping import validate_event_mapping, write_mapping_report
 from taekbae.mapping_evidence import (
@@ -313,6 +314,8 @@ def command_finalize(args: argparse.Namespace) -> int:
         source_validation_path=args.source_validation,
         mapping_validation_path=args.mapping_validation,
         mapping_evidence_path=args.mapping_evidence_validation,
+        exposure_validation_path=args.exposure_validation,
+        exposure_path=args.exposure,
         route_input_path=args.route_input,
         status_output=args.status_output,
         manifest_output=args.manifest_output,
@@ -337,7 +340,9 @@ def command_finalize(args: argparse.Namespace) -> int:
             REPO_ROOT / "data/manual/event_segment_mapping.csv",
             REPO_ROOT / "data/manual/event_scope_evidence.csv",
             REPO_ROOT / "data/manual/standard_corridor_evidence.csv",
+            REPO_ROOT / "data/manual/event_exposure_geometry.csv",
             REPO_ROOT / "outputs/tables/standard_corridor_evidence.json",
+            REPO_ROOT / "outputs/tables/event_exposure.csv",
         ),
     )
     _print_json(report)
@@ -349,7 +354,7 @@ def command_finalize(args: argparse.Namespace) -> int:
 def command_export_risk(args: argparse.Namespace) -> int:
     connection = connect(args.db)
     try:
-        rows = latest_risk_rows(connection)
+        rows = latest_risk_rows(connection, exposure_path=args.exposure)
     finally:
         connection.close()
     write_risk_csv(rows, args.csv_output)
@@ -369,7 +374,7 @@ def command_enrich_route(args: argparse.Namespace) -> int:
     route_rows = load_route_csv(args.input)
     connection = connect(args.db)
     try:
-        rows = enrich_route(connection, route_rows)
+        rows = enrich_route(connection, route_rows, exposure_path=args.exposure)
     finally:
         connection.close()
     write_risk_csv(rows, args.csv_output)
@@ -389,7 +394,7 @@ def command_enrich_route(args: argparse.Namespace) -> int:
 
 
 def command_serve(args: argparse.Namespace) -> int:
-    serve(args.db, args.events, args.host, args.port)
+    serve(args.db, args.events, args.exposure, args.host, args.port)
     return 0
 
 
@@ -450,6 +455,59 @@ def command_build_corridor_evidence(args: argparse.Namespace) -> int:
             "source_sha256": report["source_sha256"],
             "csv_output": _display_path(args.csv_output),
             "json_output": _display_path(args.json_output),
+        }
+    )
+    return 0
+
+
+def command_build_exposure(args: argparse.Namespace) -> int:
+    actual_hashes = {
+        "store_zip": sha256_file(args.store_zip),
+        "store_csv": sha256_file(args.store_csv),
+        "node_link_zip": sha256_file(args.node_link_zip),
+    }
+    expected_hashes = {
+        "store_zip": args.expected_store_zip_sha256.lower(),
+        "store_csv": args.expected_store_csv_sha256.lower(),
+        "node_link_zip": args.expected_node_link_sha256.lower(),
+    }
+    mismatches = {
+        name: {"expected": expected_hashes[name], "actual": actual.lower()}
+        for name, actual in actual_hashes.items()
+        if actual.lower() != expected_hashes[name]
+    }
+    if mismatches:
+        _print_json({"status": "hash_mismatch", "mismatches": mismatches})
+        return 6
+    report = build_exposure_report(
+        store_csv=args.store_csv,
+        geometry_csv=args.geometry,
+        mapping_csv=args.mapping,
+        node_link_dir=args.node_link_dir,
+        store_source_date=args.store_source_date,
+        store_zip_sha256=actual_hashes["store_zip"],
+        store_csv_sha256=actual_hashes["store_csv"],
+        node_link_sha256=actual_hashes["node_link_zip"],
+    )
+    write_exposure_outputs(
+        report,
+        event_csv=args.event_output,
+        segment_csv=args.segment_output,
+        report_json=args.report_output,
+    )
+    _print_json(
+        {
+            "status": report["status"],
+            "source_rows": report["store_source"]["source_rows"],
+            "valid_coordinate_rows": report["store_source"]["valid_coordinate_rows"],
+            "event_count": report["event_count"],
+            "segment_count": report["segment_count"],
+            "event_exposure": {
+                row["event_id"]: row["exposure_proxy"] for row in report["events"]
+            },
+            "event_output": _display_path(args.event_output),
+            "segment_output": _display_path(args.segment_output),
+            "report_output": _display_path(args.report_output),
         }
     )
     return 0
@@ -753,6 +811,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "outputs/tables/mapping_evidence_validation.json",
     )
     finalize.add_argument(
+        "--exposure-validation",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/exposure_validation.json",
+    )
+    finalize.add_argument(
+        "--exposure",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/segment_exposure.csv",
+    )
+    finalize.add_argument(
         "--route-input", type=Path, default=REPO_ROOT / "examples/route_sample.csv"
     )
     finalize.add_argument(
@@ -815,6 +883,11 @@ def build_parser() -> argparse.ArgumentParser:
     risk = subparsers.add_parser("export-risk", help="export current observational risk")
     risk.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     risk.add_argument(
+        "--exposure",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/segment_exposure.csv",
+    )
+    risk.add_argument(
         "--csv-output", type=Path, default=REPO_ROOT / "outputs/api/current_risk.csv"
     )
     risk.add_argument(
@@ -828,6 +901,11 @@ def build_parser() -> argparse.ArgumentParser:
     route.add_argument("--input", type=Path, required=True)
     route.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     route.add_argument(
+        "--exposure",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/segment_exposure.csv",
+    )
+    route.add_argument(
         "--csv-output", type=Path, default=REPO_ROOT / "outputs/api/route_risk.csv"
     )
     route.add_argument(
@@ -838,6 +916,11 @@ def build_parser() -> argparse.ArgumentParser:
     dashboard = subparsers.add_parser("serve", help="serve the local risk dashboard")
     dashboard.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     dashboard.add_argument("--events", type=Path, default=REPO_ROOT / "data/manual/urban_events.csv")
+    dashboard.add_argument(
+        "--exposure",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/segment_exposure.csv",
+    )
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8765)
     dashboard.set_defaults(func=command_serve)
@@ -911,6 +994,70 @@ def build_parser() -> argparse.ArgumentParser:
         default=REPO_ROOT / "outputs/tables/standard_corridor_evidence.json",
     )
     corridor.set_defaults(func=command_build_corridor_evidence)
+
+    exposure = subparsers.add_parser(
+        "build-exposure",
+        help="count official active-store points within verified tram-event buffers",
+    )
+    exposure.add_argument(
+        "--store-zip",
+        type=Path,
+        default=REPO_ROOT / "data/external/sbiz_stores_20260331.zip",
+    )
+    exposure.add_argument(
+        "--store-csv",
+        type=Path,
+        default=REPO_ROOT / "data/external/sbiz_stores_daejeon_202603.csv",
+    )
+    exposure.add_argument(
+        "--expected-store-zip-sha256",
+        default="1cf968e5b3e428bd46ad8f64f6e7c39da52c9b60d023a473b46163577484c6e9",
+    )
+    exposure.add_argument(
+        "--expected-store-csv-sha256",
+        default="ad252b91748ca35889370fe664326fa6acc145457252f77c031b13e92201c470",
+    )
+    exposure.add_argument(
+        "--node-link-dir",
+        type=Path,
+        default=REPO_ROOT / "data/external/nodelink_2024_11_29",
+    )
+    exposure.add_argument(
+        "--node-link-zip",
+        type=Path,
+        default=REPO_ROOT / "data/external/NODELINKDATA_2024-11-29.zip",
+    )
+    exposure.add_argument(
+        "--expected-node-link-sha256",
+        default="4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
+    )
+    exposure.add_argument(
+        "--geometry",
+        type=Path,
+        default=REPO_ROOT / "data/manual/event_exposure_geometry.csv",
+    )
+    exposure.add_argument(
+        "--mapping",
+        type=Path,
+        default=REPO_ROOT / "data/manual/event_segment_mapping.csv",
+    )
+    exposure.add_argument("--store-source-date", default="2026-03-31")
+    exposure.add_argument(
+        "--event-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/event_exposure.csv",
+    )
+    exposure.add_argument(
+        "--segment-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/segment_exposure.csv",
+    )
+    exposure.add_argument(
+        "--report-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/exposure_validation.json",
+    )
+    exposure.set_defaults(func=command_build_exposure)
     return parser
 
 

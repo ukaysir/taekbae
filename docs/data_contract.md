@@ -1,4 +1,4 @@
-# 데이터 계약서 v0.1.0
+# 데이터 계약서 v0.2.0
 
 이 문서는 특정 TMS 제품과의 계약이 아니라, 계획경로에 트램 공사구간의 관측·예보 위험을 붙이기 위한 독립형 CSV/JSON 프로토타입 계약이다. 주문, 송장, 주소, 수취인, 기사 개인정보는 입력받지 않는다.
 
@@ -21,7 +21,7 @@ JSON 최상위 필드:
 
 | 필드 | 형식 | 의미 |
 |---|---|---|
-| `schema_version` | 문자열 | 현재 `0.1.0` |
+| `schema_version` | 문자열 | 현재 `0.2.0` |
 | `generated_at_kst` | ISO 8601 | 파일 생성시각 |
 | `records` | 배열 | 구간별 결과 |
 
@@ -43,7 +43,10 @@ JSON 최상위 필드:
 | `observed_traffic_state` | `원활`, `지체`, `정체`, null | 최신 공식 화면의 현재 상태 |
 | `risk_grade` | `low`, `medium`, `high`, `unknown` | 현재 상태 또는 향후 검증모델의 등급 |
 | `risk_basis` | 문자열 | 등급의 근거 코드 |
-| `exposure_proxy` | 수 또는 null | 향후 공사노출 대리변수. 현재 null |
+| `exposure_proxy` | 수 또는 null | 공사 이벤트 점·링크에서 250m 이내인 영업 중 상가 수. 검증된 시범구간 10개만 값이 있음 |
+| `exposure_proxy_unit` | 문자열 또는 null | 현재 `active_store_count_within_250m` |
+| `exposure_source_date` | 날짜 또는 null | 상가정보 기준일. 현재 `2026-03-31` |
+| `exposure_confidence` | 문자열 또는 null | 이벤트 공간기하와 관측구간 매핑의 신뢰도 |
 | `model_status` | `ready_for_evaluation`, `insufficient_data`, `unavailable` 등 | 자료·평가 상태. `ready_for_evaluation`은 예측모델 사용 가능을 뜻하지 않음 |
 | `confidence_or_warning` | 문자열 | 예측/관측 구분과 제한사항 |
 | `source_updated_at_kst` | ISO 8601 또는 null | 원자료 갱신시각 |
@@ -62,6 +65,8 @@ JSON 최상위 필드:
 
 따라서 `forecast_at_kst`라는 필드명이 있어도 현재 레코드는 예측이 아니다. `target_at_kst`, `predicted_travel_time_sec`, `expected_delay_sec`가 null이고 경고문에 “예측 아님”이 들어간다.
 
+`exposure_proxy`는 교통 위험등급과 별개다. 실제 택배 물량·주문량·배송건수가 아니며, 공간근거가 검증되지 않은 구간은 추정값을 채우지 않고 null로 둔다.
+
 ## 향후 예측 활성화 조건
 
 예측 필드는 다음을 모두 통과한 버전에서만 채운다.
@@ -77,6 +82,7 @@ JSON 최상위 필드:
 ## 실행 예
 
 ~~~powershell
+.\.venv\Scripts\python.exe -m taekbae build-exposure
 .\.venv\Scripts\python.exe -m taekbae export-risk
 .\.venv\Scripts\python.exe -m taekbae enrich-route --input examples\route_sample.csv
 ~~~
@@ -95,6 +101,9 @@ JSON 최상위 필드:
 - `outputs/api/current_risk.json`
 - `outputs/api/route_risk.csv`
 - `outputs/api/route_risk.json`
+- `outputs/tables/event_exposure.csv`
+- `outputs/tables/segment_exposure.csv`
+- `outputs/tables/exposure_validation.json`
 
 ## 생산 연동 전에 남은 일
 

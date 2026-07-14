@@ -1,0 +1,4 @@
+﻿event_id,geometry_type,reference_ids,road_name,start_name,end_name,buffer_m,exposure_proxy,exposure_proxy_unit,store_source_date,geometry_confidence,calculation
+tram-z01-01,link_path,1870002301,계족로,평생교육문화센터교차로,승리교회,250,69,active_store_count_within_250m,2026-03-31,medium,EPSG:5186 point-to-event-geometry distance
+tram-z01-02,node,1870001200,계족로,읍내삼거리,읍내삼거리,250,12,active_store_count_within_250m,2026-03-31,high,EPSG:5186 point-to-event-geometry distance
+tram-z12-01,link_path,1840005901|1840005902|1840124300|1840125900,계백로,서대전역네거리,서대전네거리,250,994,active_store_count_within_250m,2026-03-31,high,EPSG:5186 point-to-event-geometry distance

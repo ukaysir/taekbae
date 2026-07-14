@@ -61,3 +61,17 @@ class RiskContractTests(unittest.TestCase):
         path.write_text("route_id,segment_id\nr1,s1\n", encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "missing required fields"):
             load_route_csv(path)
+
+    def test_verified_exposure_is_joined_without_becoming_traffic_risk(self) -> None:
+        exposure = self.root / "segment_exposure.csv"
+        exposure.write_text(
+            "segment_id,exposure_proxy,exposure_proxy_unit,store_source_date,"
+            "geometry_confidence,mapping_confidence\n"
+            "segment-a,69,active_store_count_within_250m,2026-03-31,medium,medium\n",
+            encoding="utf-8",
+        )
+        row = latest_risk_rows(self.connection, exposure_path=exposure)[0]
+        self.assertEqual(69, row["exposure_proxy"])
+        self.assertEqual("2026-03-31", row["exposure_source_date"])
+        self.assertEqual("high", row["risk_grade"])
+        self.assertIn("실제 물동량이 아님", row["confidence_or_warning"])

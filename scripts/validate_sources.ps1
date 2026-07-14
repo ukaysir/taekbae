@@ -54,6 +54,16 @@ try {
         $null
     }
 
+    $exposureText = (& $python -m taekbae build-exposure 2>&1 | Out-String)
+    $exposureExit = $LASTEXITCODE
+    $exposure = $exposureText | ConvertFrom-Json
+    $exposureValidationPath = Join-Path $repo 'outputs\tables\exposure_validation.json'
+    $exposureValidation = if (Test-Path -LiteralPath $exposureValidationPath) {
+        Get-Content -LiteralPath $exposureValidationPath -Raw -Encoding utf8 | ConvertFrom-Json
+    } else {
+        $null
+    }
+
     $nodeZip = Join-Path $repo 'data\external\NODELINKDATA_2024-11-29.zip'
     $nodeHash = if (Test-Path -LiteralPath $nodeZip) {
         (Get-FileHash -LiteralPath $nodeZip -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -100,6 +110,18 @@ try {
                 sha256 = $nodeHash
                 expected_sha256 = '4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90'
                 hash_verified = ($nodeHash -eq '4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90')
+            }
+            commercial_exposure = [ordered]@{
+                dataset_id = '15083033'
+                source_date = if ($exposureValidation) { $exposureValidation.store_source.source_date } else { $null }
+                source_rows = if ($exposureValidation) { $exposureValidation.store_source.source_rows } else { 0 }
+                valid_coordinate_rows = if ($exposureValidation) { $exposureValidation.store_source.valid_coordinate_rows } else { 0 }
+                event_count = if ($exposureValidation) { $exposureValidation.event_count } else { 0 }
+                segment_count = if ($exposureValidation) { $exposureValidation.segment_count } else { 0 }
+                event_exposure = $exposure.event_exposure
+                exit_code = $exposureExit
+                operational_usable = ($exposureExit -eq 0 -and $exposureValidation.status -eq 'valid')
+                meaning = '250m 내 영업 중 상가 수; 실제 택배 물량·주문량 아님'
             }
             tram_event_scope_mapping = [ordered]@{
                 exit_code = $mappingExit

@@ -28,7 +28,10 @@ pdf = [
   "reportlab>=4.4,<5",
 ]
 browser = ["websocket-client>=1.8,<2"]
-geo = ["pyshp>=2.3,<3"]
+geo = [
+  "pyproj>=3.7,<4",
+  "pyshp>=2.3,<3",
+]
 documents = [
   "Markdown>=3.8,<4",
   "olefile>=0.47,<1",

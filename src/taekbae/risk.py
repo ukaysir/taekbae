@@ -12,6 +12,14 @@ from taekbae.config import KST
 
 
 ROUTE_REQUIRED_FIELDS = {"route_id", "stop_order", "segment_id", "planned_at_kst"}
+EXPOSURE_REQUIRED_FIELDS = {
+    "segment_id",
+    "exposure_proxy",
+    "exposure_proxy_unit",
+    "store_source_date",
+    "geometry_confidence",
+    "mapping_confidence",
+}
 RISK_OUTPUT_FIELDS = [
     "route_id",
     "stop_order",
@@ -29,11 +37,42 @@ RISK_OUTPUT_FIELDS = [
     "risk_grade",
     "risk_basis",
     "exposure_proxy",
+    "exposure_proxy_unit",
+    "exposure_source_date",
+    "exposure_confidence",
     "model_status",
     "confidence_or_warning",
     "source_updated_at_kst",
     "matched",
 ]
+
+
+def load_segment_exposure(path: Path) -> dict[str, dict[str, Any]]:
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        missing = sorted(EXPOSURE_REQUIRED_FIELDS - set(reader.fieldnames or []))
+        if missing:
+            raise ValueError(f"exposure CSV missing required fields: {', '.join(missing)}")
+        result: dict[str, dict[str, Any]] = {}
+        for index, row in enumerate(reader, start=2):
+            segment_id = row["segment_id"].strip()
+            if not segment_id or segment_id in result:
+                raise ValueError(f"invalid or duplicate segment_id in exposure CSV row {index}")
+            try:
+                numeric = float(row["exposure_proxy"])
+            except ValueError as exc:
+                raise ValueError(f"invalid exposure_proxy in CSV row {index}") from exc
+            proxy: int | float = int(numeric) if numeric.is_integer() else numeric
+            result[segment_id] = {
+                "exposure_proxy": proxy,
+                "exposure_proxy_unit": row["exposure_proxy_unit"].strip(),
+                "exposure_source_date": row["store_source_date"].strip(),
+                "exposure_confidence": (
+                    f"geometry={row['geometry_confidence'].strip()};"
+                    f"mapping={row['mapping_confidence'].strip()}"
+                ),
+            }
+    return result
 
 
 def _observation_grade(traffic_state: str | None) -> tuple[str, str]:
@@ -46,9 +85,13 @@ def _observation_grade(traffic_state: str | None) -> tuple[str, str]:
 
 
 def latest_risk_rows(
-    connection: sqlite3.Connection, *, readiness: dict[str, Any] | None = None
+    connection: sqlite3.Connection,
+    *,
+    readiness: dict[str, Any] | None = None,
+    exposure_path: Path | None = None,
 ) -> list[dict[str, Any]]:
     readiness = readiness or assess_forecast_readiness(connection)
+    exposure = load_segment_exposure(exposure_path) if exposure_path is not None else {}
     model_status = (
         "ready_for_evaluation"
         if readiness["status"] == "ready"
@@ -72,11 +115,14 @@ def latest_risk_rows(
     result = []
     for row in rows:
         grade, basis = _observation_grade(row["traffic_state"])
+        segment_exposure = exposure.get(row["segment_id"], {})
         warning = (
             "예측 아님: 공식 트램 페이지의 현재 교통상태를 그대로 분류"
             if row["source"] == "djtram_web"
             else "AI 모델 검증 전 현재 관측값만 제공"
         )
+        if segment_exposure:
+            warning += "; 노출값은 250m 내 영업 중 상가 수이며 실제 물동량이 아님"
         result.append(
             {
                 "segment_id": row["segment_id"],
@@ -91,7 +137,10 @@ def latest_risk_rows(
                 "observed_traffic_state": row["traffic_state"],
                 "risk_grade": grade,
                 "risk_basis": basis,
-                "exposure_proxy": None,
+                "exposure_proxy": segment_exposure.get("exposure_proxy"),
+                "exposure_proxy_unit": segment_exposure.get("exposure_proxy_unit"),
+                "exposure_source_date": segment_exposure.get("exposure_source_date"),
+                "exposure_confidence": segment_exposure.get("exposure_confidence"),
                 "model_status": model_status,
                 "confidence_or_warning": warning,
                 "source_updated_at_kst": row["observed_at_kst"],
@@ -123,10 +172,13 @@ def enrich_route(
     route_rows: Iterable[dict[str, str]],
     *,
     readiness: dict[str, Any] | None = None,
+    exposure_path: Path | None = None,
 ) -> list[dict[str, Any]]:
     current = {
         row["segment_id"]: row
-        for row in latest_risk_rows(connection, readiness=readiness)
+        for row in latest_risk_rows(
+            connection, readiness=readiness, exposure_path=exposure_path
+        )
     }
     enriched: list[dict[str, Any]] = []
     for route in route_rows:
@@ -148,6 +200,9 @@ def enrich_route(
             "risk_grade": "unknown",
             "risk_basis": "segment_not_found",
             "exposure_proxy": None,
+            "exposure_proxy_unit": None,
+            "exposure_source_date": None,
+            "exposure_confidence": None,
             "model_status": "unavailable",
             "confidence_or_warning": "입력 segment_id를 현재 관측자료에서 찾지 못함",
             "source_updated_at_kst": None,
@@ -166,7 +221,7 @@ def enrich_route(
 def write_risk_json(rows: list[dict[str, Any]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "schema_version": "0.1.0",
+        "schema_version": "0.2.0",
         "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
         "records": rows,
     }

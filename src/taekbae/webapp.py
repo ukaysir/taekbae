@@ -40,11 +40,14 @@ def build_dashboard_status(readiness: dict[str, Any]) -> dict[str, str]:
 
 
 def build_dashboard_payload(
-    connection: sqlite3.Connection, *, events_path: Path
+    connection: sqlite3.Connection,
+    *,
+    events_path: Path,
+    exposure_path: Path | None = None,
 ) -> dict[str, Any]:
     quality = build_quality_report(connection)
     readiness = assess_forecast_readiness(connection)
-    segments = latest_risk_rows(connection)
+    segments = latest_risk_rows(connection, exposure_path=exposure_path)
     events = load_events(events_path)
     return {
         "status": build_dashboard_status(readiness),
@@ -73,20 +76,22 @@ def dashboard_html() -> str:
 <div id="notice" class="notice">데이터 상태를 확인하고 있습니다.</div>
 <section class="stats"><div class="card"><div class="stat-label">수집 스냅샷</div><div id="snapshots" class="stat-value">-</div></div><div class="card"><div class="stat-label">관측 구간</div><div id="segments" class="stat-value">-</div></div><div class="card"><div class="stat-label">학습 예제</div><div id="examples" class="stat-value">-</div></div><div class="card"><div class="stat-label">관측 기간</div><div id="span" class="stat-value">-</div></div></section>
 <div class="section-title"><h2>현재 구간 상태</h2><div class="filters"><button class="active" data-zone="all">전체</button><button data-zone="1">1공구</button><button data-zone="12">12공구</button></div></div>
-<div class="card table-wrap"><table><thead><tr><th>공구</th><th>구간</th><th>상태</th><th>속도</th><th>갱신시각</th></tr></thead><tbody id="segmentRows"><tr><td colspan="5" class="empty">불러오는 중</td></tr></tbody></table></div>
+<div class="card table-wrap"><table><thead><tr><th>공구</th><th>구간</th><th>상태</th><th>속도</th><th>배송노출*</th><th>갱신시각</th></tr></thead><tbody id="segmentRows"><tr><td colspan="6" class="empty">불러오는 중</td></tr></tbody></table></div>
 <div class="section-title"><h2>공사 통제 기준표</h2></div><section id="events" class="events"></section>
-<p class="footer">현재 화면은 주문·기사·차량·경로를 관리하는 TMS가 아닙니다. 정식 교통 OpenAPI 승인 전에는 공식 트램 페이지의 현재 상태만 표시하며, 예상 지연시간과 30분 AI 예측 성능은 검증 전까지 비워 둡니다.</p>
+<p class="footer">현재 화면은 주문·기사·차량·경로를 관리하는 TMS가 아닙니다. 정식 교통 OpenAPI 승인 전에는 공식 트램 페이지의 현재 상태만 표시하며, 예상 지연시간과 30분 AI 예측 성능은 검증 전까지 비워 둡니다. *배송노출은 공사 이벤트 250m 안의 영업 중 상가 수로, 실제 택배 물량이 아닙니다.</p>
 </main>
 <script>
 let payload=null;let zone='all';
 const gradeLabel={low:'낮음',medium:'주의',high:'높음',unknown:'미확인'};
-function renderSegments(){const rows=payload.segments.filter(x=>zone==='all'||String(x.zone)===zone);document.querySelector('#segmentRows').innerHTML=rows.length?rows.map(x=>`<tr><td>${x.zone??'-'}공구</td><td>${x.segment_label??x.segment_id}</td><td><span class="risk ${x.risk_grade}"><i class="dot"></i>${gradeLabel[x.risk_grade]||x.risk_grade}</span></td><td>${x.observed_speed_kmh??'-'} km/h</td><td>${(x.source_updated_at_kst||'-').replace('T',' ')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">해당 공구 자료가 없습니다.</td></tr>'}
+function renderSegments(){const rows=payload.segments.filter(x=>zone==='all'||String(x.zone)===zone);document.querySelector('#segmentRows').innerHTML=rows.length?rows.map(x=>`<tr><td>${x.zone??'-'}공구</td><td>${x.segment_label??x.segment_id}</td><td><span class="risk ${x.risk_grade}"><i class="dot"></i>${gradeLabel[x.risk_grade]||x.risk_grade}</span></td><td>${x.observed_speed_kmh??'-'} km/h</td><td>${x.exposure_proxy??'-'}${x.exposure_proxy==null?'':'곳'}</td><td>${(x.source_updated_at_kst||'-').replace('T',' ')}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">해당 공구 자료가 없습니다.</td></tr>'}
 fetch('/api/dashboard').then(r=>r.json()).then(data=>{payload=data;document.querySelector('#mode').textContent=data.status.mode==='evaluation_ready_observation_only'?'평가 준비·관측 전용':'관측 모니터링';document.querySelector('#notice').textContent=data.status.notice;const a=data.readiness.actual;document.querySelector('#snapshots').textContent=a.snapshots.toLocaleString();document.querySelector('#segments').textContent=a.segments.toLocaleString();document.querySelector('#examples').textContent=a.forecast_examples.toLocaleString();document.querySelector('#span').textContent=a.span_hours.toFixed(1)+'시간';renderSegments();document.querySelector('#events').innerHTML=data.events.map(e=>`<article class="card event"><h3>${e.contract_section} · ${e.location}</h3><p>${e.start_date} ~ ${e.end_date}</p><p>${e.control_detail} · ${e.direction}</p><p>확인 상태: ${e.status_as_of_2026_07_14}</p></article>`).join('')||'<div class="card empty">공사 이벤트가 없습니다.</div>'}).catch(err=>{document.querySelector('#notice').textContent='데이터를 불러오지 못했습니다: '+err});
 document.querySelectorAll('[data-zone]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-zone]').forEach(x=>x.classList.remove('active'));button.classList.add('active');zone=button.dataset.zone;renderSegments()}));
 </script></body></html>"""
 
 
-def make_handler(db_path: Path, events_path: Path) -> type[BaseHTTPRequestHandler]:
+def make_handler(
+    db_path: Path, events_path: Path, exposure_path: Path | None = None
+) -> type[BaseHTTPRequestHandler]:
     class DashboardHandler(BaseHTTPRequestHandler):
         def _send_json(self, value: Any, status: HTTPStatus = HTTPStatus.OK) -> None:
             encoded = json.dumps(value, ensure_ascii=False, indent=2).encode("utf-8")
@@ -114,7 +119,13 @@ def make_handler(db_path: Path, events_path: Path) -> type[BaseHTTPRequestHandle
             if path == "/api/dashboard":
                 connection = connect(db_path)
                 try:
-                    self._send_json(build_dashboard_payload(connection, events_path=events_path))
+                    self._send_json(
+                        build_dashboard_payload(
+                            connection,
+                            events_path=events_path,
+                            exposure_path=exposure_path,
+                        )
+                    )
                 finally:
                     connection.close()
                 return
@@ -126,8 +137,16 @@ def make_handler(db_path: Path, events_path: Path) -> type[BaseHTTPRequestHandle
     return DashboardHandler
 
 
-def serve(db_path: Path, events_path: Path, host: str, port: int) -> None:
-    server = ThreadingHTTPServer((host, port), make_handler(db_path, events_path))
+def serve(
+    db_path: Path,
+    events_path: Path,
+    exposure_path: Path | None,
+    host: str,
+    port: int,
+) -> None:
+    server = ThreadingHTTPServer(
+        (host, port), make_handler(db_path, events_path, exposure_path)
+    )
     print(f"Dashboard listening on http://{host}:{port}", flush=True)
     try:
         server.serve_forever()

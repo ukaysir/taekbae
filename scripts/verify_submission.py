@@ -20,7 +20,9 @@ REQUIRED_TEXT = {
         "HTTP 403",
         "insufficient_data",
         "Gate 2",
-        "27개",
+        "32개",
+        "78,607",
+        "배송노출",
         "SHA-256",
     ],
     "report": [
@@ -31,7 +33,8 @@ REQUIRED_TEXT = {
         "팀 기여",
         "HTTP 403",
         "Gate 2",
-        "27개",
+        "32개",
+        "78,607",
     ],
 }
 

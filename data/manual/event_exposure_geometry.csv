@@ -1,0 +1,4 @@
+event_id,geometry_type,reference_ids,buffer_m,road_name,start_name,end_name,source_dataset,source_version,source_sha256,confidence,derivation,checked_at_kst
+tram-z01-01,link_path,1870002301,250,계족로,평생교육문화센터교차로,승리교회,ITS 국가표준 노드·링크,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,medium,공식 공사이미지의 계족로 통제범위를 평생교육문화센터교차로에서 승리교회까지 순방향 표준링크로 대응,2026-07-15T01:45:00+09:00
+tram-z01-02,node,1870001200,250,계족로,읍내삼거리,읍내삼거리,ITS 국가표준 노드·링크,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,high,공식 공사이미지의 읍내삼거리 중심을 동명 표준노드에 직접 대응,2026-07-15T01:45:00+09:00
+tram-z12-01,link_path,1840005901|1840005902|1840124300|1840125900,250,계백로,서대전역네거리,서대전네거리,ITS 국가표준 노드·링크,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,high,공식 양 끝점 사이 계백로 순방향 최단경로 4개 링크,2026-07-15T01:45:00+09:00

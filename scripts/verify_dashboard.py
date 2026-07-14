@@ -176,6 +176,12 @@ def main() -> int:
             checks["event_cards"] = session.evaluate(
                 "document.querySelectorAll('#events article').length"
             )
+            checks["exposure_rows"] = session.evaluate(
+                "payload.segments.filter(x => x.exposure_proxy != null).length"
+            )
+            checks["has_exposure_disclaimer"] = session.evaluate(
+                "document.querySelector('.footer')?.innerText.includes('실제 택배 물량이 아닙니다')"
+            )
             metrics = session.call("Page.getLayoutMetrics")
             content = metrics.get("cssContentSize") or metrics.get("contentSize")
             image = session.call(
@@ -219,6 +225,8 @@ def main() -> int:
         "zone_1_rows": 9,
         "zone_12_rows": 32,
         "event_cards": 5,
+        "exposure_rows": 10,
+        "has_exposure_disclaimer": True,
     }
     for name, value in expected.items():
         if checks.get(name) != value:

@@ -29,6 +29,7 @@
 | D07 | ITS 노드·링크 자료실: https://www.its.go.kr/nodelink/nodelinkRef | 사용 | 공식 배포파일 출처 | 대용량 원본은 Git 제외, 해시 기록 |
 | D08 | 국가교통 데이터 오픈마켓 이용안내: https://docs.bigdata-transportation.kr/open/open_2.html 및 https://docs.bigdata-transportation.kr/open/open_6.html | 후보 | 과거 대전 소통정보 다운로드 절차 | 로그인/구매 후 파일 확인 필요 |
 | D09 | 대전 트램 공사 알림: https://www.daejeon.go.kr/djTram/notify/normalBoardDetail.do?boardId=djTram_0001&menuSeq=6724&ntatcSeq=1495771010 | 사용 | 계족로 동부여성가족원~읍내동 보도육교 통제범위 | 2025-08-22 게시문구를 자동 대조; 현재 상태는 D01에서 별도 확인 |
+| D10 | 소상공인시장진흥공단 상가(상권)정보: https://www.data.go.kr/data/15083033/fileData.do | 사용 | 2026-03-31 영업 중 상가 ID·주소·경도·위도 | 공식 ZIP과 대전 CSV 해시 검증; 상가 수는 실제 택배 물량이 아닌 노출 대리값 |
 
 ## 실제 산출물과 원자료 계보
 
@@ -40,8 +41,11 @@
 | `data/manual/event_scope_evidence.csv` | D01의 공식 이미지 2건·D09의 공지문 | URL·기대문구·이미지 SHA-256과 공사범위 신뢰도를 기록 |
 | `outputs/tables/mapping_evidence_validation.json` | `event_scope_evidence.csv`의 공식 URL·자산 | HTTP 상태·문구·PNG 규격·해시를 실시간 검증 |
 | `data/manual/event_segment_mapping.csv` | 공사 이벤트·현재 교통라벨·표준 링크·공식 범위근거 | 사람이 포함/후보/제외와 범위/개별라벨 신뢰도를 구분해 판정 |
-| `outputs/api/current_risk.*` | 최신 관측 | 현재 속도 기반 관측등급; 예측필드는 null |
-| `outputs/api/route_risk.*` | `examples/route_sample.csv` + 최신 관측 | 사용자가 준 경로의 구간 ID와 관측위험을 결합 |
+| `data/manual/event_exposure_geometry.csv` | D01·D06·D07의 공식 공사범위와 표준 링크/노드 | 이벤트별 점·링크 참조, 250m 반경, 공간근거 신뢰도를 고정 |
+| `outputs/tables/exposure_validation.json` | D10 대전 CSV + `event_exposure_geometry.csv` | WGS84→EPSG:5186 변환, 점–이벤트 거리, 원본 품질·해시·이벤트별 상가 수 기록 |
+| `outputs/tables/segment_exposure.csv` | 이벤트별 상가 수 + `event_segment_mapping.csv` | 시범 관측구간 10개에 노출값·단위·기준일·공간/매핑 신뢰도를 연결 |
+| `outputs/api/current_risk.*` | 최신 관측 + 검증된 시범구간 노출값 | 현재 속도 기반 관측등급과 노출 대리값을 별도 필드로 제공; 예측필드는 null |
+| `outputs/api/route_risk.*` | `examples/route_sample.csv` + 최신 관측 + 노출값 | 계획경로의 구간 ID와 관측위험·노출 대리값을 결합 |
 | `outputs/tables/model_evaluation.json` | SQLite 관측패널 | 최소 데이터 미달 시 평가·학습을 중단하고 주장 잠금 |
 | `outputs/tables/finalization_status.json` | 품질·모델준비·데이터원·매핑 검증 | 부족조건과 허용/금지 주장을 기계 판독 형태로 기록 |
 | `outputs/tables/finalization_manifest.json` | 게이트 통과 후 동결 DB·모델·결과·근거 파일 | 상대경로·바이트·SHA-256과 SQLite 무결성 결과를 기록; 현재 미달이면 생성하지 않음 |
@@ -62,6 +66,8 @@
 
 - 표준 노드·링크 ZIP: 2024-11-29, 125,973,128바이트
 - 표준 노드·링크 SHA-256: `4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90`
+- 상가정보 전국 ZIP: 2026-03-31 기준, 341,021,001바이트, SHA-256 `1cf968e5b3e428bd46ad8f64f6e7c39da52c9b60d023a473b46163577484c6e9`
+- 상가정보 대전 CSV: 78,607행, 41,866,930바이트, SHA-256 `ad252b91748ca35889370fe664326fa6acc145457252f77c031b13e92201c470`
 - 1공구 동부여성가족원~영진로얄아파트 공식 이미지 SHA-256: `cc53de219ef78da31113ffff93ee7e0241452c4c51466dd40218f4c3937bb413`
 - 1공구 읍내삼거리 공식 이미지 SHA-256: `d7d5b0ec42725da5a752b0acfc6b9994a39bcd3925b60b334c76afc833c06d12`
 - 공모전 첨부 1·2: 공식 게시물 첨부와 로컬 해시 일치 확인
