@@ -189,7 +189,7 @@ def add_page_numbers(source: Path, output: Path) -> int:
         writer.add_page(page)
     writer.add_metadata(
         {
-            "/Title": "TRAM-RISK competition draft",
+            "/Title": "대전 트램 공사구간의 도심배송 위험 관측·예보 모듈",
             "/Author": "[participant input required]",
             "/Subject": "2026 logistics data and AI competition draft",
         }

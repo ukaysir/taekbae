@@ -20,7 +20,7 @@ REQUIRED_TEXT = {
         "HTTP 403",
         "insufficient_data",
         "Gate 2",
-        "32개",
+        "전체 자동 테스트",
         "78,607",
         "배송노출",
         "SHA-256",
@@ -33,7 +33,7 @@ REQUIRED_TEXT = {
         "팀 기여",
         "HTTP 403",
         "Gate 2",
-        "32개",
+        "전체 자동 테스트",
         "78,607",
     ],
 }

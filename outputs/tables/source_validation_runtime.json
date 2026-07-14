@@ -1,5 +1,5 @@
 {
-  "tested_at_kst": "2026-07-15T01:56:33.6585262+09:00",
+  "tested_at_kst": "2026-07-15T02:16:40.6793163+09:00",
   "credential": {
     "environment_variable": "DATA_GO_KR_SERVICE_KEY",
     "present": true,
@@ -35,9 +35,9 @@
       ],
       "exit_code": 0,
       "latest_run_status": "success",
-      "latest_observed_at_kst": "2026-07-15T01:51:48+09:00",
-      "snapshots": 13,
-      "records": 533,
+      "latest_observed_at_kst": "2026-07-15T02:11:48+09:00",
+      "snapshots": 15,
+      "records": 615,
       "segments": 41,
       "operational_usable": true
     },

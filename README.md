@@ -1,6 +1,6 @@
 # 대전 트램 물류영향 예보 프로토타입
 
-대전 트램 공사를 첫 실증사례로 삼아 계획공사 구간의 교통위험을 수집·예측하고, 기존 TMS가 사용할 수 있는 CSV·JSON 위험정보로 변환하는 공모전 프로젝트다. 주문·송장·기사·차량·정산이나 최종 배차경로를 관리하는 TMS를 대체하지 않는다.
+대전 트램 공사를 첫 실증사례로 삼아 계획공사 구간의 교통위험을 수집하고 조건을 통과할 때만 예측하며, 특정 TMS에 종속되지 않은 CSV·JSON 위험정보로 변환하는 공모전 프로젝트다. 주문·송장·기사·차량·정산이나 최종 배차경로를 관리하는 TMS를 대체하지 않는다.
 
 ## 현재 검증 상태
 
@@ -16,7 +16,7 @@
 
 ~~~powershell
 python -m venv .venv
-.\.venv\Scripts\python -m pip install -e ".[analysis,browser,geo]"
+.\.venv\Scripts\python -m pip install -e ".[analysis,browser,geo,pdf]"
 .\.venv\Scripts\python -m unittest discover -s tests -v
 
 # 공식 트램 페이지에서 1·12공구를 한 번 수집
@@ -81,6 +81,19 @@ python -m venv .venv
 ~~~
 
 PDF는 `[DRAFT]` 워터마크와 사용자 입력 자리표시자를 포함한 내용 초안이다. HWP 자동 편집은 원본 표의 인라인 개체와 다중 문단 셀을 안전하게 보존하지 못해 중단했으며, 상태와 수동 마감 항목은 [hwp_specs/README.md](hwp_specs/README.md)에 기록했다.
+
+공식 제출 전에는 [평가·제출 감사](docs/submission/evaluation_audit.md), [주최기관 문의 초안](docs/submission/organizer_question_draft.md), [참가자 입력 템플릿](docs/submission/participant_input_template.md)을 확인한다. 실제 개인정보가 든 파일과 제출 매니페스트는 `.private/`에 두고 Git에 커밋하지 않는다.
+
+최종 파일이 모두 준비된 뒤에만 다음 사전검사기로 ZIP을 만든다.
+
+~~~powershell
+New-Item -ItemType Directory -Force .private | Out-Null
+Copy-Item docs\submission\submission_package.example.json .private\submission_package.json
+# .private\submission_package.json의 팀명·파일경로·확인값을 실제 제출본에 맞게 수정
+.\.venv\Scripts\python scripts\package_submission.py --manifest .private\submission_package.json --report outputs\tables\submission_preflight.json --output-dir outputs\submission\final --create-zip
+~~~
+
+검사기는 필수 7개 실제 파일, HWP/PDF 시그니처, 제안서 10쪽, 보고서 권장 3~5쪽, DRAFT·자리표시자·비밀값, 필수 확인사항을 검사한다. 하나라도 실패하면 ZIP을 만들지 않으며, 통과한 경우에만 `[공모전_팀명].zip`을 생성하고 50,000,000바이트 미만과 CRC를 다시 확인한다.
 
 ## 데이터 보존 원칙
 

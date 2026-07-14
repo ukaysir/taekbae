@@ -14,6 +14,9 @@ htmlcov/
 !.env.example
 secrets.*
 *.key
+.private/
+outputs/tables/submission_preflight.json
+outputs/submission/final/
 
 # Collected and generated data
 data/raw/**

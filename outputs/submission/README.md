@@ -13,6 +13,7 @@
 2. 공식 HWP 양식에 내용을 직접 옮기고 표·쪽번호·서명을 육안 검수한다.
 3. 팀명·개인정보·동의·서명·심사위원 번호를 반영한다.
 4. 48시간 수집 후 `scripts/finalize_submission.ps1`를 실행해 자료·근거 게이트와 동결 매니페스트를 확인하고 초안 수치를 갱신한다.
-5. `[DRAFT]` 표시를 제거한 HWP/PDF 5종만 ZIP으로 묶어 50MB 이하인지 확인한다.
+5. `[DRAFT]` 표시를 제거한 필수 서류 5종의 실제 파일 7개(제안서·보고서는 HWP/PDF 각 2개)를 준비한다.
+6. `.private/submission_package.json`을 작성하고 `scripts/package_submission.py`가 모든 확인사항, 페이지 수, 비밀값, 50MB 미만과 ZIP CRC를 통과할 때만 최종 압축파일을 사용한다.
 
 HWP 자동 편집 중단 사유는 `hwp_specs/README.md`에 기록했다.

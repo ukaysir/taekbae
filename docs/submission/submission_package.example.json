@@ -1,0 +1,21 @@
+{
+  "team_name": "팀명입력",
+  "files": {
+    "application": "1. 참가신청서.pdf",
+    "proposal_hwp": "2. 제안서.hwp",
+    "proposal_pdf": "2. 제안서.pdf",
+    "analysis_hwp": "3. 분석 과정 보고서.hwp",
+    "analysis_pdf": "3. 분석 과정 보고서.pdf",
+    "consent_pledge_pdf": "4. 개인정보 수집·이용·제공 동의서 및 참가서약서.pdf",
+    "reviewer_draw_pdf": "5. 심사위원 추첨표.pdf"
+  },
+  "confirmations": {
+    "participant_eligibility_confirmed": false,
+    "latest_notice_checked": false,
+    "organizer_rights_clause_clarified": false,
+    "originality_and_source_rights_confirmed": false,
+    "hwp_pdf_content_matched": false,
+    "all_required_signatures_present": false,
+    "exactly_seven_draw_numbers_marked": false
+  }
+}
