@@ -7,6 +7,7 @@
 1. **현재 사용:** 대전 트램 공식 1·12공구 페이지의 현재 교통상황
 2. **승인 필요:** 대전광역시 대전교통정보 OpenAPI 데이터셋 `15157924`
 3. **공간근거:** ITS 표준 노드·링크 2024-11-29 배포본
+4. **범위근거:** 1공구 공식 공사이미지·공지문을 URL·문구·SHA-256으로 검증
 
 2026-07-15 실제 호출에서 최신 대전 교통 API와 기상청 ASOS는 모두 HTTP 403이었다. 승인 전에는 공사 통제정보가 구체적인 1·12공구만 10분 간격으로 수집한다. 이 경로에는 링크 ID·통행시간·좌표가 없으므로 정식 API와 동등한 데이터라고 주장하지 않는다. AI 예측은 최소 48시간·3개 날짜·288스냅숏·5,000예제를 충족할 때까지 비활성화한다.
 
@@ -32,6 +33,9 @@ python -m venv .venv
 # 표준 노드·링크로 서대전 통행축 근거 재생성
 .\.venv\Scripts\python -m taekbae build-corridor-evidence
 
+# 공식 공사범위 근거와 이벤트–관측구간 매핑 검증
+.\.venv\Scripts\python -m taekbae validate-mapping
+
 # 현재 관측 위험과 샘플 계획경로 결합
 .\.venv\Scripts\python -m taekbae export-risk
 .\.venv\Scripts\python -m taekbae enrich-route --input examples\route_sample.csv
@@ -44,6 +48,14 @@ python -m venv .venv
 .\scripts\collector_status.ps1
 .\scripts\stop_collector.ps1
 ~~~
+
+48시간 자료 게이트와 최종 동결은 한 명령으로 재검증한다.
+
+~~~powershell
+.\scripts\finalize_submission.ps1
+~~~
+
+이 명령은 먼저 API·공식 페이지·이미지 해시·매핑 근거를 갱신한다. 288스냅숏·48시간·3개 날짜·5,000예제 중 하나라도 부족하면 종료코드 3과 `pending`을 기록하고 DB 복제본·모델·최종 매니페스트를 만들지 않는다. 모두 통과하면 일관된 SQLite 복제본을 만든 뒤 시간순 모델평가, 현재 위험정보, 샘플 경로 결합과 SHA-256 매니페스트를 생성한다.
 
 대시보드:
 

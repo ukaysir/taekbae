@@ -18,7 +18,11 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
 
 
 def validate_event_mapping(
-    connection: sqlite3.Connection, *, events_path: Path, mapping_path: Path
+    connection: sqlite3.Connection,
+    *,
+    events_path: Path,
+    mapping_path: Path,
+    verified_scope_events: set[str] | None = None,
 ) -> dict[str, Any]:
     events = {row["event_id"]: row for row in _read_csv(events_path)}
     mappings = _read_csv(mapping_path)
@@ -85,17 +89,31 @@ def validate_event_mapping(
                 "low_confidence_segments": confidence.get("low", 0),
             }
         )
-    high_confidence_pilot_events = {
+    high_confidence_segment_events = {
         row["event_id"]
         for row in mappings
         if row.get("decision") == "include_pilot" and row.get("confidence") == "high"
     }
-    gate_passed = not errors and len(high_confidence_pilot_events) >= 2
+    eligible_mapping_events = {
+        row["event_id"]
+        for row in mappings
+        if row.get("decision") == "include_pilot"
+        and row.get("confidence") in {"high", "medium"}
+    }
+    verified_scope_events = verified_scope_events or set()
+    qualified_pilot_events = eligible_mapping_events & verified_scope_events
+    gate_passed = not errors and len(qualified_pilot_events) >= 2
     return {
         "status": "valid" if not errors else "invalid",
         "gate_2_status": "passed" if gate_passed else "partial",
-        "gate_2_rule": "at least two events with high-confidence included segments",
-        "high_confidence_pilot_events": sorted(high_confidence_pilot_events),
+        "gate_2_rule": (
+            "at least two events with verified high-confidence official scope evidence "
+            "and included medium/high-confidence observed segments"
+        ),
+        "verified_high_scope_events": sorted(verified_scope_events),
+        "eligible_mapping_events": sorted(eligible_mapping_events),
+        "qualified_pilot_events": sorted(qualified_pilot_events),
+        "high_confidence_segment_events": sorted(high_confidence_segment_events),
         "events": len(events),
         "mapping_rows": len(mappings),
         "mapped_events": len(by_event),
@@ -104,7 +122,8 @@ def validate_event_mapping(
         "limitations": [
             "fallback page has no official link ID or coordinates",
             "duplicate labels are distinguished by page occurrence order",
-            "candidate mappings require standard node-link or manual map confirmation",
+            "medium-confidence duplicate occurrences are included as a conservative exposure set",
+            "scope evidence must pass live URL, text, and asset-hash verification",
         ],
     }
 

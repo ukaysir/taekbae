@@ -28,6 +28,7 @@
 | D06 | ITS 표준 노드·링크 조회: https://www.its.go.kr/nodelink/nodelinkStatus?service=inquiryNodelink | 사용 | 노드·방향성 링크·도로명·길이·제한속도 | 2024-11-29 배포본; 실시간값 아님 |
 | D07 | ITS 노드·링크 자료실: https://www.its.go.kr/nodelink/nodelinkRef | 사용 | 공식 배포파일 출처 | 대용량 원본은 Git 제외, 해시 기록 |
 | D08 | 국가교통 데이터 오픈마켓 이용안내: https://docs.bigdata-transportation.kr/open/open_2.html 및 https://docs.bigdata-transportation.kr/open/open_6.html | 후보 | 과거 대전 소통정보 다운로드 절차 | 로그인/구매 후 파일 확인 필요 |
+| D09 | 대전 트램 공사 알림: https://www.daejeon.go.kr/djTram/notify/normalBoardDetail.do?boardId=djTram_0001&menuSeq=6724&ntatcSeq=1495771010 | 사용 | 계족로 동부여성가족원~읍내동 보도육교 통제범위 | 2025-08-22 게시문구를 자동 대조; 현재 상태는 D01에서 별도 확인 |
 
 ## 실제 산출물과 원자료 계보
 
@@ -36,10 +37,14 @@
 | `data/manual/urban_events.csv` | D01 | 공사 이벤트를 사람이 전사하고 확인시각·상태를 기록 |
 | `data/processed/traffic.sqlite` | D01의 1·12공구 교통표 | 10분 수집, 원응답 gzip·SHA-256 보존, 구간 정규화 |
 | `data/manual/standard_corridor_evidence.csv` | D06·D07 | EPSG:5186 영역 필터 후 공식 링크 길이 방향성 최단경로 |
-| `data/manual/event_segment_mapping.csv` | 공사 이벤트·현재 교통라벨·표준 링크 근거 | 사람이 포함/후보/제외와 신뢰도를 판정 |
+| `data/manual/event_scope_evidence.csv` | D01의 공식 이미지 2건·D09의 공지문 | URL·기대문구·이미지 SHA-256과 공사범위 신뢰도를 기록 |
+| `outputs/tables/mapping_evidence_validation.json` | `event_scope_evidence.csv`의 공식 URL·자산 | HTTP 상태·문구·PNG 규격·해시를 실시간 검증 |
+| `data/manual/event_segment_mapping.csv` | 공사 이벤트·현재 교통라벨·표준 링크·공식 범위근거 | 사람이 포함/후보/제외와 범위/개별라벨 신뢰도를 구분해 판정 |
 | `outputs/api/current_risk.*` | 최신 관측 | 현재 속도 기반 관측등급; 예측필드는 null |
 | `outputs/api/route_risk.*` | `examples/route_sample.csv` + 최신 관측 | 사용자가 준 경로의 구간 ID와 관측위험을 결합 |
 | `outputs/tables/model_evaluation.json` | SQLite 관측패널 | 최소 데이터 미달 시 평가·학습을 중단하고 주장 잠금 |
+| `outputs/tables/finalization_status.json` | 품질·모델준비·데이터원·매핑 검증 | 부족조건과 허용/금지 주장을 기계 판독 형태로 기록 |
+| `outputs/tables/finalization_manifest.json` | 게이트 통과 후 동결 DB·모델·결과·근거 파일 | 상대경로·바이트·SHA-256과 SQLite 무결성 결과를 기록; 현재 미달이면 생성하지 않음 |
 
 ## 경쟁·대체재 공식자료
 
@@ -57,6 +62,8 @@
 
 - 표준 노드·링크 ZIP: 2024-11-29, 125,973,128바이트
 - 표준 노드·링크 SHA-256: `4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90`
+- 1공구 동부여성가족원~영진로얄아파트 공식 이미지 SHA-256: `cc53de219ef78da31113ffff93ee7e0241452c4c51466dd40218f4c3937bb413`
+- 1공구 읍내삼거리 공식 이미지 SHA-256: `d7d5b0ec42725da5a752b0acfc6b9994a39bcd3925b60b334c76afc833c06d12`
 - 공모전 첨부 1·2: 공식 게시물 첨부와 로컬 해시 일치 확인
 - 수집 원응답: `data/raw/<source>/<date>/`에 gzip과 메타데이터로 보존, Git 제외
 - 실시간·공사계획 자료: 제출 직전 다시 확인하고 확인일을 갱신

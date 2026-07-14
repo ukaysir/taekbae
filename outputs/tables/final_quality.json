@@ -1,0 +1,168 @@
+{
+  "changes": [
+    {
+      "comparisons": 369,
+      "mean_absolute_speed_change_kmh": 2.64,
+      "response_hash_changed_rows": 369,
+      "source": "djtram_web",
+      "speed_changed_rows": 254
+    }
+  ],
+  "continuity": [
+    {
+      "freshness_minutes": 0.672,
+      "long_interval_count_gt_15": 0,
+      "max_segments_per_snapshot": 41,
+      "median_interval_minutes_all": 10.0,
+      "median_interval_minutes_ge_5": 10.0,
+      "min_segments_per_snapshot": 41,
+      "modal_segments_per_snapshot": 41,
+      "non_modal_snapshot_count": 0,
+      "short_interval_count_lt_5": 1,
+      "snapshots": 10,
+      "source": "djtram_web"
+    }
+  ],
+  "overall": {
+    "first_observed_at_kst": "2026-07-15T00:01:35+09:00",
+    "invalid_speed_rows": 0,
+    "last_observed_at_kst": "2026-07-15T01:21:48+09:00",
+    "records": 410,
+    "segments": 41,
+    "source_snapshots": 10,
+    "zero_speed_rows": 0
+  },
+  "recent_runs": [
+    {
+      "ended_at_kst": "2026-07-15T01:21:49+09:00",
+      "record_count": 41,
+      "run_id": "2e2ba953-61c1-444b-9d0b-467d05a61ea9",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T01:21:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T01:11:49+09:00",
+      "record_count": 41,
+      "run_id": "5f3e780b-193b-4b3a-8a04-21132a36a520",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T01:11:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T01:01:49+09:00",
+      "record_count": 41,
+      "run_id": "135d0f48-53ae-43c3-9a61-8ff15f70ee87",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T01:01:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:51:49+09:00",
+      "record_count": 41,
+      "run_id": "db36df9a-b5b7-4a75-8a05-0b27e9a68b4e",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:51:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:41:49+09:00",
+      "record_count": 41,
+      "run_id": "ca5afba3-e4bc-4685-a4d5-51f646e51009",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:41:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:31:49+09:00",
+      "record_count": 41,
+      "run_id": "6cfd2f66-3e89-4c0f-bc2a-6ec2f04b8b68",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:31:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:21:49+09:00",
+      "record_count": 41,
+      "run_id": "22b1dc67-7fc0-4604-b397-514e3b995d96",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:21:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:11:49+09:00",
+      "record_count": 41,
+      "run_id": "6d921fcc-75ee-4a5a-850f-2e475e080ea5",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:11:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:01:49+09:00",
+      "record_count": 41,
+      "run_id": "8e54d654-eb40-457c-8205-c79b64e98d5f",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:01:48+09:00",
+      "status": "success",
+      "warning_count": 6
+    },
+    {
+      "ended_at_kst": "2026-07-15T00:01:36+09:00",
+      "record_count": 41,
+      "run_id": "e9bba402-6b3f-4213-be76-9db91337b449",
+      "source": "djtram_web",
+      "started_at_kst": "2026-07-15T00:01:35+09:00",
+      "status": "success",
+      "warning_count": 6
+    }
+  ],
+  "run_summary": [
+    {
+      "failed_runs": 0,
+      "partial_runs": 0,
+      "records_reported": 410,
+      "runs": 10,
+      "source": "djtram_web",
+      "successful_runs": 10,
+      "warnings_reported": 60
+    }
+  ],
+  "sources": [
+    {
+      "first_observed_at_kst": "2026-07-15T00:01:35+09:00",
+      "last_observed_at_kst": "2026-07-15T01:21:48+09:00",
+      "records": 410,
+      "segments": 41,
+      "snapshots": 10,
+      "source": "djtram_web"
+    }
+  ],
+  "zones": [
+    {
+      "max_speed_kmh": 54.0,
+      "mean_speed_kmh": 40.84,
+      "min_speed_kmh": 13.0,
+      "records": 90,
+      "segments": 9,
+      "snapshots": 10,
+      "zone": 1
+    },
+    {
+      "max_speed_kmh": 49.0,
+      "mean_speed_kmh": 27.89,
+      "min_speed_kmh": 8.0,
+      "records": 320,
+      "segments": 32,
+      "snapshots": 10,
+      "zone": 12
+    }
+  ]
+}

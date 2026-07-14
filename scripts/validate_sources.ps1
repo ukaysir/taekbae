@@ -12,24 +12,47 @@ if (-not $env:DATA_GO_KR_SERVICE_KEY) {
         'User'
     )
 }
-if (-not $env:DATA_GO_KR_SERVICE_KEY) {
-    throw 'DATA_GO_KR_SERVICE_KEY is not set.'
-}
+$credentialPresent = [bool]$env:DATA_GO_KR_SERVICE_KEY
 
 $env:PYTHONPATH = Join-Path $repo 'src'
 Push-Location $repo
 try {
-    $trafficText = (& $python -m taekbae smoke-api --num-rows 10 2>&1 | Out-String)
-    $trafficExit = $LASTEXITCODE
-    $traffic = $trafficText | ConvertFrom-Json
+    if ($credentialPresent) {
+        $trafficText = (& $python -m taekbae smoke-api --num-rows 10 2>&1 | Out-String)
+        $trafficExit = $LASTEXITCODE
+        $traffic = $trafficText | ConvertFrom-Json
 
-    $weatherText = (& $python -m taekbae smoke-weather --station-id 133 --num-rows 100 2>&1 | Out-String)
-    $weatherExit = $LASTEXITCODE
-    $weather = $weatherText | ConvertFrom-Json
+        $weatherText = (& $python -m taekbae smoke-weather --station-id 133 --num-rows 100 2>&1 | Out-String)
+        $weatherExit = $LASTEXITCODE
+        $weather = $weatherText | ConvertFrom-Json
+    } else {
+        $trafficExit = 3
+        $traffic = [ordered]@{
+            status = 'missing_credential'
+            result_code = 'MISSING_ENV'
+            result_message = 'DATA_GO_KR_SERVICE_KEY is not set.'
+        }
+        $weatherExit = 3
+        $weather = [ordered]@{
+            status = 'missing_credential'
+            result_code = 'MISSING_ENV'
+            result_message = 'DATA_GO_KR_SERVICE_KEY is not set.'
+        }
+    }
 
     $qualityText = (& $python -m taekbae quality 2>&1 | Out-String)
     $qualityExit = $LASTEXITCODE
     $quality = $qualityText | ConvertFrom-Json
+
+    $mappingText = (& $python -m taekbae validate-mapping 2>&1 | Out-String)
+    $mappingExit = $LASTEXITCODE
+    $mapping = $mappingText | ConvertFrom-Json
+    $mappingEvidencePath = Join-Path $repo 'outputs\tables\mapping_evidence_validation.json'
+    $mappingEvidence = if (Test-Path -LiteralPath $mappingEvidencePath) {
+        Get-Content -LiteralPath $mappingEvidencePath -Raw -Encoding utf8 | ConvertFrom-Json
+    } else {
+        $null
+    }
 
     $nodeZip = Join-Path $repo 'data\external\NODELINKDATA_2024-11-29.zip'
     $nodeHash = if (Test-Path -LiteralPath $nodeZip) {
@@ -43,7 +66,7 @@ try {
         tested_at_kst = (Get-Date).ToString('o')
         credential = [ordered]@{
             environment_variable = 'DATA_GO_KR_SERVICE_KEY'
-            present = [bool]$env:DATA_GO_KR_SERVICE_KEY
+            present = $credentialPresent
             value_logged = $false
         }
         sources = [ordered]@{
@@ -77,6 +100,16 @@ try {
                 sha256 = $nodeHash
                 expected_sha256 = '4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90'
                 hash_verified = ($nodeHash -eq '4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90')
+            }
+            tram_event_scope_mapping = [ordered]@{
+                exit_code = $mappingExit
+                evidence_status = $mapping.scope_evidence_status
+                evidence_rows = if ($mappingEvidence) { $mappingEvidence.evidence_rows } else { 0 }
+                verified_high_scope_events = @($mapping.verified_high_scope_events)
+                qualified_pilot_events = @($mapping.qualified_pilot_events)
+                gate_2_status = $mapping.gate_2_status
+                limitations = @($mapping.limitations)
+                operational_usable = ($mappingExit -eq 0 -and $mapping.gate_2_status -eq 'passed')
             }
         }
     }

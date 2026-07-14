@@ -12,7 +12,7 @@
 1. `docs/submission/submission_checklist.md`의 사용자 입력과 데이터 마감 항목을 완료한다.
 2. 공식 HWP 양식에 내용을 직접 옮기고 표·쪽번호·서명을 육안 검수한다.
 3. 팀명·개인정보·동의·서명·심사위원 번호를 반영한다.
-4. 48시간 수집자료와 API 승인 상태를 다시 계산해 초안 수치를 갱신한다.
+4. 48시간 수집 후 `scripts/finalize_submission.ps1`를 실행해 자료·근거 게이트와 동결 매니페스트를 확인하고 초안 수치를 갱신한다.
 5. `[DRAFT]` 표시를 제거한 HWP/PDF 5종만 ZIP으로 묶어 50MB 이하인지 확인한다.
 
 HWP 자동 편집 중단 사유는 `hwp_specs/README.md`에 기록했다.

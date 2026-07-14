@@ -1,5 +1,5 @@
 {
-  "tested_at_kst": "2026-07-15T00:58:03.5314126+09:00",
+  "tested_at_kst": "2026-07-15T01:22:17.4718293+09:00",
   "credential": {
     "environment_variable": "DATA_GO_KR_SERVICE_KEY",
     "present": true,
@@ -35,9 +35,9 @@
       ],
       "exit_code": 0,
       "latest_run_status": "success",
-      "latest_observed_at_kst": "2026-07-15T00:51:48+09:00",
-      "snapshots": 7,
-      "records": 287,
+      "latest_observed_at_kst": "2026-07-15T01:21:48+09:00",
+      "snapshots": 10,
+      "records": 410,
       "segments": 41,
       "operational_usable": true
     },
@@ -47,6 +47,27 @@
       "sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
       "expected_sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
       "hash_verified": true
+    },
+    "tram_event_scope_mapping": {
+      "exit_code": 0,
+      "evidence_status": "valid",
+      "evidence_rows": 3,
+      "verified_high_scope_events": [
+        "tram-z01-01",
+        "tram-z01-02"
+      ],
+      "qualified_pilot_events": [
+        "tram-z01-01",
+        "tram-z01-02"
+      ],
+      "gate_2_status": "passed",
+      "limitations": [
+        "fallback page has no official link ID or coordinates",
+        "duplicate labels are distinguished by page occurrence order",
+        "medium-confidence duplicate occurrences are included as a conservative exposure set",
+        "scope evidence must pass live URL, text, and asset-hash verification"
+      ],
+      "operational_usable": true
     }
   }
 }

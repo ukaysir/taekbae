@@ -19,6 +19,9 @@ REQUIRED_TEXT = {
         "발전가능성",
         "HTTP 403",
         "insufficient_data",
+        "Gate 2",
+        "27개",
+        "SHA-256",
     ],
     "report": [
         "데이터 수집",
@@ -27,6 +30,8 @@ REQUIRED_TEXT = {
         "AI 결과물 검토",
         "팀 기여",
         "HTTP 403",
+        "Gate 2",
+        "27개",
     ],
 }
 
@@ -55,6 +60,14 @@ def main() -> int:
     for required in REQUIRED_TEXT[args.type]:
         if required not in all_text:
             errors.append(f"missing required text: {required}")
+    forbidden_text = {
+        "local Windows path": "C:\\Users\\",
+        "browser file URL": "file:///",
+        "credential assignment": "DATA_GO_KR_SERVICE_KEY=",
+    }
+    for label, value in forbidden_text.items():
+        if value in all_text:
+            errors.append(f"forbidden text present: {label}")
 
     render_dir.mkdir(parents=True, exist_ok=True)
     document = pdfium.PdfDocument(str(pdf_path))

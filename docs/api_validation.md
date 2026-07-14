@@ -1,6 +1,6 @@
 # 데이터·API 실제 사용성 검증 기록
 
-- 기준시각: 2026-07-15 00:32 KST
+- 기준시각: 2026-07-15 01:12 KST(API 재시험 00:57, 수집 점검 01:11, 매핑 근거 점검 01:12)
 - 재현 명령: `powershell -ExecutionPolicy Bypass -File scripts/validate_sources.ps1`
 - 기계 판독 결과: `outputs/tables/source_validation_runtime.json`
 - 보안 원칙: 인증값은 환경변수에서만 읽고 요청 URL·문서·Git·출력에 기록하지 않는다.
@@ -57,9 +57,9 @@
 
 ### 실제 수집 결과
 
-2026-07-15 00:32 KST 재현 보고서 기준:
+2026-07-15 01:11 KST 중간 점검 기준:
 
-- 1·12공구 5개 스냅숏, 205행, 안정 식별 구간 41개
+- 1·12공구 9개 스냅숏, 369행, 안정 식별 구간 41개
 - 최근 수집 성공, 실패 0건
 - 스냅숏당 41행으로 동일
 - 관측속도 0 또는 파싱 불가능 값 0건
@@ -67,10 +67,21 @@
 
 이 페이지에는 속도와 교통상태는 있지만 공식 링크 ID, 좌표, 통행시간이 없다. 따라서 현재 화면과 CSV/JSON은 **현재 관측 위험**만 제공하고 `predicted_*` 필드는 `null`로 유지한다.
 
+### 공사범위 근거 검증
+
+1공구의 두 시범 이벤트는 공식 페이지에 연결된 공사이미지와 공식 공지문을 별도 근거 대장으로 관리한다. 2026-07-15 01:12 KST 자동검증 결과는 다음과 같다.
+
+- 동부여성가족원~영진로얄아파트 이미지: HTTP 200, PNG 1125×1125, 2,598,455바이트, SHA-256 일치
+- 읍내삼거리 이미지: HTTP 200, PNG 1125×1125, 935,070바이트, SHA-256 일치
+- 2025-08-22 공지문: HTTP 200, `계족로(동부여성가족원 ~ 읍내동 보도육교)` 기대문구 일치
+
+이로써 두 이벤트의 **공사범위**는 high 신뢰로 확인했다. 그러나 동부여성가족원~영진로얄아파트 관측 라벨은 같은 도로·지점·방향이 두 번 나타나고 좌표·공식 링크 ID가 없으므로 **개별 발생순번 매핑**은 medium이다. 두 종류의 신뢰도를 합쳐서 표현하지 않는다. 근거와 실행결과는 `data/manual/event_scope_evidence.csv`, `outputs/tables/mapping_evidence_validation.json`, `outputs/tables/mapping_validation.json`에 있다.
+
 공식 출처:
 
 - https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=1
 - https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=12
+- https://www.daejeon.go.kr/djTram/notify/normalBoardDetail.do?boardId=djTram_0001&menuSeq=6724&ntatcSeq=1495771010
 
 ## 4. 표준 노드·링크 검증
 

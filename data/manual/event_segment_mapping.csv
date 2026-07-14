@@ -1,8 +1,8 @@
 event_id,segment_id,segment_label,mapping_method,confidence,decision,reason,checked_at_kst
-tram-z01-01,djtram-z01-ae5876728c09,계족로 상행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,공구와 영진아파트 명칭은 겹치지만 공사구간 양 끝점·방향이 직접 일치하지 않음,2026-07-15T00:20:00+09:00
-tram-z01-01,djtram-z01-b199e8cb7b67,계족로 하행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,공구와 영진아파트 명칭은 겹치지만 공사구간 양 끝점·방향이 직접 일치하지 않음,2026-07-15T00:20:00+09:00
-tram-z01-01,djtram-z01-9c175d9bbb69,계족로 상행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,동일 라벨 중복 발생순번 구간이며 좌표 확인 전 확정 불가,2026-07-15T00:20:00+09:00
-tram-z01-01,djtram-z01-d9d62f55a5ed,계족로 하행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,동일 라벨 중복 발생순번 구간이며 좌표 확인 전 확정 불가,2026-07-15T00:20:00+09:00
+tram-z01-01,djtram-z01-ae5876728c09,계족로 상행(법동영진아파트삼거리),official_map_exact_road_place_scope,medium,include_pilot,공식 공사이미지·공지로 계족로와 영진로얄아파트 지점은 확인됐으나 동일 라벨 발생순번을 좌표로 구분할 수 없어 보수적으로 함께 포함,2026-07-15T01:10:00+09:00
+tram-z01-01,djtram-z01-b199e8cb7b67,계족로 하행(법동영진아파트삼거리),official_map_exact_road_place_scope,medium,include_pilot,공식 공사이미지·공지로 계족로와 영진로얄아파트 지점은 확인됐으나 동일 라벨 발생순번을 좌표로 구분할 수 없어 보수적으로 함께 포함,2026-07-15T01:10:00+09:00
+tram-z01-01,djtram-z01-9c175d9bbb69,계족로 상행(법동영진아파트삼거리),official_map_exact_road_place_scope,medium,include_pilot,공식 범위는 고신뢰이나 화면의 같은 도로·지점·방향 라벨 두 건 중 어느 발생순번인지 판별되지 않아 개별 매핑은 중신뢰,2026-07-15T01:10:00+09:00
+tram-z01-01,djtram-z01-d9d62f55a5ed,계족로 하행(법동영진아파트삼거리),official_map_exact_road_place_scope,medium,include_pilot,공식 범위는 고신뢰이나 화면의 같은 도로·지점·방향 라벨 두 건 중 어느 발생순번인지 판별되지 않아 개별 매핑은 중신뢰,2026-07-15T01:10:00+09:00
 tram-z01-02,djtram-z01-2475bde4126f,계족로 상행(읍내삼거리),zone_road_direction_exact_place,high,include_pilot,공구·도로·방향·읍내삼거리 명칭이 직접 식별됨,2026-07-15T00:20:00+09:00
 tram-z01-02,djtram-z01-33c91c040219,계족로 하행(읍내삼거리),zone_road_direction_exact_place,high,include_pilot,양방향 통제 이벤트와 반대 방향 쌍을 함께 식별함,2026-07-15T00:20:00+09:00
 tram-z01-02,djtram-z01-a228cf399455,신탄진로 상행(읍내삼거리 에서 대한통운),zone_and_exact_start_place,medium,candidate,읍내삼거리 출발점은 일치하지만 반대 방향 쌍과 공사 통제도로 범위 확인이 남음,2026-07-15T00:20:00+09:00

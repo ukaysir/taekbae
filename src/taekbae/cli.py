@@ -11,7 +11,12 @@ from pathlib import Path
 
 from taekbae.analysis import assess_forecast_readiness, evaluate_forecast_models, write_report
 from taekbae.config import DEFAULT_DB_PATH, KST, RAW_ROOT, REPO_ROOT, ensure_data_dirs, require_env
+from taekbae.finalization import finalize_snapshot
 from taekbae.mapping import validate_event_mapping, write_mapping_report
+from taekbae.mapping_evidence import (
+    validate_mapping_evidence,
+    write_mapping_evidence_report,
+)
 from taekbae.nodelink import build_corridor_evidence, sha256_file, write_corridor_evidence
 from taekbae.quality import build_quality_report
 from taekbae.risk import enrich_route, latest_risk_rows, load_route_csv, write_risk_csv, write_risk_json
@@ -301,6 +306,46 @@ def command_evaluate(args: argparse.Namespace) -> int:
     return 0 if report["status"] == "evaluated" else 3
 
 
+def command_finalize(args: argparse.Namespace) -> int:
+    report = finalize_snapshot(
+        repo_root=REPO_ROOT,
+        db_path=args.db,
+        source_validation_path=args.source_validation,
+        mapping_validation_path=args.mapping_validation,
+        mapping_evidence_path=args.mapping_evidence_validation,
+        route_input_path=args.route_input,
+        status_output=args.status_output,
+        manifest_output=args.manifest_output,
+        readiness_output=args.readiness_output,
+        quality_output=args.quality_output,
+        model_report_output=args.model_report_output,
+        model_output=args.model_output,
+        risk_csv_output=args.risk_csv_output,
+        risk_json_output=args.risk_json_output,
+        route_csv_output=args.route_csv_output,
+        route_json_output=args.route_json_output,
+        frozen_db_dir=args.frozen_db_dir,
+        source=args.source,
+        metric=args.metric,
+        min_snapshots=args.min_snapshots,
+        min_span_hours=args.min_span_hours,
+        min_examples=args.min_examples,
+        min_distinct_dates=args.min_distinct_dates,
+        max_validation_age_hours=args.max_validation_age_hours,
+        provenance_paths=(
+            REPO_ROOT / "data/manual/urban_events.csv",
+            REPO_ROOT / "data/manual/event_segment_mapping.csv",
+            REPO_ROOT / "data/manual/event_scope_evidence.csv",
+            REPO_ROOT / "data/manual/standard_corridor_evidence.csv",
+            REPO_ROOT / "outputs/tables/standard_corridor_evidence.json",
+        ),
+    )
+    _print_json(report)
+    if report.get("finalized") is True:
+        return 0
+    return 3 if report.get("status") == "pending" else 7
+
+
 def command_export_risk(args: argparse.Namespace) -> int:
     connection = connect(args.db)
     try:
@@ -349,16 +394,24 @@ def command_serve(args: argparse.Namespace) -> int:
 
 
 def command_validate_mapping(args: argparse.Namespace) -> int:
+    evidence_report = validate_mapping_evidence(args.evidence)
+    write_mapping_evidence_report(evidence_report, args.evidence_output)
+    verified_scope_events = set(evidence_report["high_confidence_verified_events"])
     connection = connect(args.db)
     try:
         report = validate_event_mapping(
-            connection, events_path=args.events, mapping_path=args.mapping
+            connection,
+            events_path=args.events,
+            mapping_path=args.mapping,
+            verified_scope_events=verified_scope_events,
         )
     finally:
         connection.close()
+    report["scope_evidence_status"] = evidence_report["status"]
+    report["scope_evidence_output"] = _display_path(args.evidence_output)
     write_mapping_report(report, args.output)
     _print_json(report)
-    return 0 if report["status"] == "valid" else 5
+    return 0 if report["status"] == "valid" and evidence_report["status"] == "valid" else 5
 
 
 def command_build_corridor_evidence(args: argparse.Namespace) -> int:
@@ -670,6 +723,95 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evaluate.set_defaults(func=command_evaluate)
 
+    finalize = subparsers.add_parser(
+        "finalize-snapshot",
+        help="freeze and evaluate a reproducible snapshot only after every hard gate passes",
+    )
+    finalize.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
+    finalize.add_argument("--source", default="djtram_web")
+    finalize.add_argument(
+        "--metric", choices=["speed_kmh", "travel_time_sec"], default="speed_kmh"
+    )
+    finalize.add_argument("--min-snapshots", type=int, default=288)
+    finalize.add_argument("--min-span-hours", type=float, default=48.0)
+    finalize.add_argument("--min-examples", type=int, default=5000)
+    finalize.add_argument("--min-distinct-dates", type=int, default=3)
+    finalize.add_argument("--max-validation-age-hours", type=float, default=24.0)
+    finalize.add_argument(
+        "--source-validation",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/source_validation_runtime.json",
+    )
+    finalize.add_argument(
+        "--mapping-validation",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/mapping_validation.json",
+    )
+    finalize.add_argument(
+        "--mapping-evidence-validation",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/mapping_evidence_validation.json",
+    )
+    finalize.add_argument(
+        "--route-input", type=Path, default=REPO_ROOT / "examples/route_sample.csv"
+    )
+    finalize.add_argument(
+        "--status-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/finalization_status.json",
+    )
+    finalize.add_argument(
+        "--manifest-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/finalization_manifest.json",
+    )
+    finalize.add_argument(
+        "--readiness-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/final_readiness.json",
+    )
+    finalize.add_argument(
+        "--quality-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/final_quality.json",
+    )
+    finalize.add_argument(
+        "--model-report-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/model_evaluation.json",
+    )
+    finalize.add_argument(
+        "--model-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/models/forecast.joblib",
+    )
+    finalize.add_argument(
+        "--risk-csv-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/api/current_risk.csv",
+    )
+    finalize.add_argument(
+        "--risk-json-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/api/current_risk.json",
+    )
+    finalize.add_argument(
+        "--route-csv-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/api/route_risk.csv",
+    )
+    finalize.add_argument(
+        "--route-json-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/api/route_risk.json",
+    )
+    finalize.add_argument(
+        "--frozen-db-dir",
+        type=Path,
+        default=REPO_ROOT / "data/processed/frozen",
+    )
+    finalize.set_defaults(func=command_finalize)
+
     risk = subparsers.add_parser("export-risk", help="export current observational risk")
     risk.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     risk.add_argument(
@@ -711,6 +853,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--mapping",
         type=Path,
         default=REPO_ROOT / "data/manual/event_segment_mapping.csv",
+    )
+    mapping.add_argument(
+        "--evidence",
+        type=Path,
+        default=REPO_ROOT / "data/manual/event_scope_evidence.csv",
+    )
+    mapping.add_argument(
+        "--evidence-output",
+        type=Path,
+        default=REPO_ROOT / "outputs/tables/mapping_evidence_validation.json",
     )
     mapping.add_argument(
         "--output",

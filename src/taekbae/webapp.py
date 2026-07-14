@@ -22,6 +22,23 @@ def load_events(path: Path) -> list[dict[str, str]]:
         return [dict(row) for row in csv.DictReader(handle)]
 
 
+def build_dashboard_status(readiness: dict[str, Any]) -> dict[str, str]:
+    if readiness.get("status") == "ready":
+        return {
+            "mode": "evaluation_ready_observation_only",
+            "model_status": "ready_for_evaluation",
+            "notice": (
+                "AI 시간순 평가 조건은 충족됐지만 모델 우월성과 추론 출력은 아직 별도 검증 대상입니다. "
+                "현재 위험은 계속 공식 페이지의 관측 상태이며 예측이 아닙니다."
+            ),
+        }
+    return {
+        "mode": "observation_monitoring",
+        "model_status": str(readiness.get("status", "unknown")),
+        "notice": "AI 예측 준비 중 — 현재 위험은 공식 페이지의 관측 상태이며 예측이 아닙니다.",
+    }
+
+
 def build_dashboard_payload(
     connection: sqlite3.Connection, *, events_path: Path
 ) -> dict[str, Any]:
@@ -30,19 +47,7 @@ def build_dashboard_payload(
     segments = latest_risk_rows(connection)
     events = load_events(events_path)
     return {
-        "status": {
-            "mode": (
-                "validated_ai_forecast"
-                if readiness["status"] == "ready"
-                else "observation_monitoring"
-            ),
-            "model_status": readiness["status"],
-            "notice": (
-                "AI 시간순 검증 준비 완료"
-                if readiness["status"] == "ready"
-                else "AI 예측 준비 중 — 현재 위험은 공식 페이지의 관측 상태이며 예측이 아닙니다."
-            ),
-        },
+        "status": build_dashboard_status(readiness),
         "quality": quality,
         "readiness": readiness,
         "segments": segments,
@@ -76,7 +81,7 @@ def dashboard_html() -> str:
 let payload=null;let zone='all';
 const gradeLabel={low:'낮음',medium:'주의',high:'높음',unknown:'미확인'};
 function renderSegments(){const rows=payload.segments.filter(x=>zone==='all'||String(x.zone)===zone);document.querySelector('#segmentRows').innerHTML=rows.length?rows.map(x=>`<tr><td>${x.zone??'-'}공구</td><td>${x.segment_label??x.segment_id}</td><td><span class="risk ${x.risk_grade}"><i class="dot"></i>${gradeLabel[x.risk_grade]||x.risk_grade}</span></td><td>${x.observed_speed_kmh??'-'} km/h</td><td>${(x.source_updated_at_kst||'-').replace('T',' ')}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">해당 공구 자료가 없습니다.</td></tr>'}
-fetch('/api/dashboard').then(r=>r.json()).then(data=>{payload=data;document.querySelector('#mode').textContent=data.status.mode==='validated_ai_forecast'?'AI 검증 가능':'관측 모니터링';document.querySelector('#notice').textContent=data.status.notice;const a=data.readiness.actual;document.querySelector('#snapshots').textContent=a.snapshots.toLocaleString();document.querySelector('#segments').textContent=a.segments.toLocaleString();document.querySelector('#examples').textContent=a.forecast_examples.toLocaleString();document.querySelector('#span').textContent=a.span_hours.toFixed(1)+'시간';renderSegments();document.querySelector('#events').innerHTML=data.events.map(e=>`<article class="card event"><h3>${e.contract_section} · ${e.location}</h3><p>${e.start_date} ~ ${e.end_date}</p><p>${e.control_detail} · ${e.direction}</p><p>확인 상태: ${e.status_as_of_2026_07_14}</p></article>`).join('')||'<div class="card empty">공사 이벤트가 없습니다.</div>'}).catch(err=>{document.querySelector('#notice').textContent='데이터를 불러오지 못했습니다: '+err});
+fetch('/api/dashboard').then(r=>r.json()).then(data=>{payload=data;document.querySelector('#mode').textContent=data.status.mode==='evaluation_ready_observation_only'?'평가 준비·관측 전용':'관측 모니터링';document.querySelector('#notice').textContent=data.status.notice;const a=data.readiness.actual;document.querySelector('#snapshots').textContent=a.snapshots.toLocaleString();document.querySelector('#segments').textContent=a.segments.toLocaleString();document.querySelector('#examples').textContent=a.forecast_examples.toLocaleString();document.querySelector('#span').textContent=a.span_hours.toFixed(1)+'시간';renderSegments();document.querySelector('#events').innerHTML=data.events.map(e=>`<article class="card event"><h3>${e.contract_section} · ${e.location}</h3><p>${e.start_date} ~ ${e.end_date}</p><p>${e.control_detail} · ${e.direction}</p><p>확인 상태: ${e.status_as_of_2026_07_14}</p></article>`).join('')||'<div class="card empty">공사 이벤트가 없습니다.</div>'}).catch(err=>{document.querySelector('#notice').textContent='데이터를 불러오지 못했습니다: '+err});
 document.querySelectorAll('[data-zone]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-zone]').forEach(x=>x.classList.remove('active'));button.classList.add('active');zone=button.dataset.zone;renderSegments()}));
 </script></body></html>"""
 

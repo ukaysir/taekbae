@@ -1,15 +1,20 @@
 {
+  "eligible_mapping_events": [
+    "tram-z01-01",
+    "tram-z01-02",
+    "tram-z12-01"
+  ],
   "errors": [],
   "event_summary": [
     {
-      "candidate_segments": 4,
+      "candidate_segments": 0,
       "event_id": "tram-z01-01",
       "excluded_segments": 0,
       "high_confidence_segments": 0,
-      "include_pilot_segments": 0,
-      "low_confidence_segments": 4,
+      "include_pilot_segments": 4,
+      "low_confidence_segments": 0,
       "mapping_rows": 4,
-      "medium_confidence_segments": 0,
+      "medium_confidence_segments": 4,
       "status": "scheduled_active"
     },
     {
@@ -58,17 +63,28 @@
     }
   ],
   "events": 5,
-  "gate_2_rule": "at least two events with high-confidence included segments",
-  "gate_2_status": "partial",
-  "high_confidence_pilot_events": [
+  "gate_2_rule": "at least two events with verified high-confidence official scope evidence and included medium/high-confidence observed segments",
+  "gate_2_status": "passed",
+  "high_confidence_segment_events": [
     "tram-z01-02"
   ],
   "limitations": [
     "fallback page has no official link ID or coordinates",
     "duplicate labels are distinguished by page occurrence order",
-    "candidate mappings require standard node-link or manual map confirmation"
+    "medium-confidence duplicate occurrences are included as a conservative exposure set",
+    "scope evidence must pass live URL, text, and asset-hash verification"
   ],
   "mapped_events": 5,
   "mapping_rows": 18,
-  "status": "valid"
+  "qualified_pilot_events": [
+    "tram-z01-01",
+    "tram-z01-02"
+  ],
+  "scope_evidence_output": "outputs\\tables\\mapping_evidence_validation.json",
+  "scope_evidence_status": "valid",
+  "status": "valid",
+  "verified_high_scope_events": [
+    "tram-z01-01",
+    "tram-z01-02"
+  ]
 }

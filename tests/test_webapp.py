@@ -6,7 +6,7 @@ from pathlib import Path
 
 from taekbae.models import TrafficObservation
 from taekbae.storage import connect, insert_observations
-from taekbae.webapp import build_dashboard_payload, dashboard_html
+from taekbae.webapp import build_dashboard_payload, build_dashboard_status, dashboard_html
 
 
 class DashboardTests(unittest.TestCase):
@@ -39,3 +39,10 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(1, len(payload["segments"]))
         self.assertEqual(1, payload["quality"]["continuity"][0]["snapshots"])
         self.assertIn("/api/dashboard", dashboard_html())
+
+    def test_readiness_alone_never_labels_dashboard_as_validated_forecast(self) -> None:
+        status = build_dashboard_status({"status": "ready"})
+        self.assertEqual("evaluation_ready_observation_only", status["mode"])
+        self.assertEqual("ready_for_evaluation", status["model_status"])
+        self.assertIn("관측 상태", status["notice"])
+        self.assertNotIn("validated_ai_forecast", status.values())

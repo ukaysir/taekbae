@@ -44,7 +44,7 @@ JSON 최상위 필드:
 | `risk_grade` | `low`, `medium`, `high`, `unknown` | 현재 상태 또는 향후 검증모델의 등급 |
 | `risk_basis` | 문자열 | 등급의 근거 코드 |
 | `exposure_proxy` | 수 또는 null | 향후 공사노출 대리변수. 현재 null |
-| `model_status` | `ready`, `insufficient_data`, `unavailable` 등 | 모델 사용 가능 상태 |
+| `model_status` | `ready_for_evaluation`, `insufficient_data`, `unavailable` 등 | 자료·평가 상태. `ready_for_evaluation`은 예측모델 사용 가능을 뜻하지 않음 |
 | `confidence_or_warning` | 문자열 | 예측/관측 구분과 제한사항 |
 | `source_updated_at_kst` | ISO 8601 또는 null | 원자료 갱신시각 |
 | `matched` | 불리언 | 입력 구간 ID가 현재 관측과 결합됐는지 여부 |
@@ -80,6 +80,14 @@ JSON 최상위 필드:
 .\.venv\Scripts\python.exe -m taekbae export-risk
 .\.venv\Scripts\python.exe -m taekbae enrich-route --input examples\route_sample.csv
 ~~~
+
+48시간 이후 최종 자료를 고정할 때는 개별 명령 대신 다음 통합 명령을 사용한다.
+
+~~~powershell
+.\scripts\finalize_submission.ps1
+~~~
+
+자료량·기간·날짜·예제 수 또는 공식 근거 검증이 부족하면 `outputs/tables/finalization_status.json`만 `pending`/`blocked`로 갱신한다. 모든 게이트가 통과해야 일관된 SQLite 복제본, 모델평가, 위험·경로 파일과 `finalization_manifest.json`이 생성된다. 모델평가 성공과 위험계약의 예측필드 활성화는 별도다. 추론출력과 링크 길이/통행시간 계약을 연결하기 전에는 `predicted_*`를 계속 null로 둔다.
 
 생성 파일:
 

@@ -45,8 +45,15 @@ def _observation_grade(traffic_state: str | None) -> tuple[str, str]:
     return mapping.get(traffic_state or "", ("unknown", "insufficient_observation"))
 
 
-def latest_risk_rows(connection: sqlite3.Connection) -> list[dict[str, Any]]:
-    readiness = assess_forecast_readiness(connection)
+def latest_risk_rows(
+    connection: sqlite3.Connection, *, readiness: dict[str, Any] | None = None
+) -> list[dict[str, Any]]:
+    readiness = readiness or assess_forecast_readiness(connection)
+    model_status = (
+        "ready_for_evaluation"
+        if readiness["status"] == "ready"
+        else readiness["status"]
+    )
     rows = connection.execute(
         """
         WITH ranked AS (
@@ -85,7 +92,7 @@ def latest_risk_rows(connection: sqlite3.Connection) -> list[dict[str, Any]]:
                 "risk_grade": grade,
                 "risk_basis": basis,
                 "exposure_proxy": None,
-                "model_status": readiness["status"],
+                "model_status": model_status,
                 "confidence_or_warning": warning,
                 "source_updated_at_kst": row["observed_at_kst"],
             }
@@ -112,9 +119,15 @@ def load_route_csv(path: Path) -> list[dict[str, str]]:
 
 
 def enrich_route(
-    connection: sqlite3.Connection, route_rows: Iterable[dict[str, str]]
+    connection: sqlite3.Connection,
+    route_rows: Iterable[dict[str, str]],
+    *,
+    readiness: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    current = {row["segment_id"]: row for row in latest_risk_rows(connection)}
+    current = {
+        row["segment_id"]: row
+        for row in latest_risk_rows(connection, readiness=readiness)
+    }
     enriched: list[dict[str, Any]] = []
     for route in route_rows:
         observation = current.get(route["segment_id"])
