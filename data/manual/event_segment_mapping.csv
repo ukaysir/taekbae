@@ -1,0 +1,19 @@
+event_id,segment_id,segment_label,mapping_method,confidence,decision,reason,checked_at_kst
+tram-z01-01,djtram-z01-ae5876728c09,계족로 상행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,공구와 영진아파트 명칭은 겹치지만 공사구간 양 끝점·방향이 직접 일치하지 않음,2026-07-15T00:20:00+09:00
+tram-z01-01,djtram-z01-b199e8cb7b67,계족로 하행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,공구와 영진아파트 명칭은 겹치지만 공사구간 양 끝점·방향이 직접 일치하지 않음,2026-07-15T00:20:00+09:00
+tram-z01-01,djtram-z01-9c175d9bbb69,계족로 상행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,동일 라벨 중복 발생순번 구간이며 좌표 확인 전 확정 불가,2026-07-15T00:20:00+09:00
+tram-z01-01,djtram-z01-d9d62f55a5ed,계족로 하행(법동영진아파트삼거리),zone_and_partial_place_name,low,candidate,동일 라벨 중복 발생순번 구간이며 좌표 확인 전 확정 불가,2026-07-15T00:20:00+09:00
+tram-z01-02,djtram-z01-2475bde4126f,계족로 상행(읍내삼거리),zone_road_direction_exact_place,high,include_pilot,공구·도로·방향·읍내삼거리 명칭이 직접 식별됨,2026-07-15T00:20:00+09:00
+tram-z01-02,djtram-z01-33c91c040219,계족로 하행(읍내삼거리),zone_road_direction_exact_place,high,include_pilot,양방향 통제 이벤트와 반대 방향 쌍을 함께 식별함,2026-07-15T00:20:00+09:00
+tram-z01-02,djtram-z01-a228cf399455,신탄진로 상행(읍내삼거리 에서 대한통운),zone_and_exact_start_place,medium,candidate,읍내삼거리 출발점은 일치하지만 반대 방향 쌍과 공사 통제도로 범위 확인이 남음,2026-07-15T00:20:00+09:00
+tram-z01-03,djtram-z01-a228cf399455,신탄진로 상행(읍내삼거리 에서 대한통운),zone_and_road_name,low,candidate,신탄진로와 방향은 관련되나 알뜰주유소·성우보육원 양 끝점이 라벨에 없음,2026-07-15T00:20:00+09:00
+tram-z01-03,djtram-z01-15badcfe4395,신탄진로 상행(대한통운 에서 신대과도교),zone_and_road_name,low,candidate,신탄진로와 방향은 관련되나 알뜰주유소·성우보육원 양 끝점이 라벨에 없음,2026-07-15T00:20:00+09:00
+tram-z01-03,djtram-z01-d3fec30ff04a,신탄진로 상행(신대과도교 에서 신대과도교),zone_and_road_name,low,candidate,라벨의 시작·종료 지점이 같아 원자료 검수와 좌표 확인 필요,2026-07-15T00:20:00+09:00
+tram-z12-01,djtram-z12-4b979e77cec3,계백로 하행(서대전역네거리),standard_corridor_plus_zone_road_direction,medium,include_pilot,표준 노드링크가 두 네거리를 계백로로 연결함을 확인했으나 동일 라벨 후보가 복수임,2026-07-15T00:30:00+09:00
+tram-z12-01,djtram-z12-517b6a934e1f,계백로 상행(서대전역네거리),standard_corridor_plus_zone_road_direction,medium,include_pilot,표준 노드링크가 두 네거리를 계백로로 연결함을 확인했으나 동일 라벨 후보가 복수임,2026-07-15T00:30:00+09:00
+tram-z12-01,djtram-z12-58593bc6f2cc,계백로 상행(서대전역네거리),standard_corridor_plus_zone_road_direction,medium,include_pilot,표준 노드링크가 두 네거리를 계백로로 연결함을 확인했으나 발생순번의 공간 위치는 미확정임,2026-07-15T00:30:00+09:00
+tram-z12-01,djtram-z12-ff55812e319a,계백로 하행(서대전역네거리),standard_corridor_plus_zone_road_direction,medium,include_pilot,표준 노드링크가 두 네거리를 계백로로 연결함을 확인했으나 발생순번의 공간 위치는 미확정임,2026-07-15T00:30:00+09:00
+tram-z12-01,djtram-z12-24aa3a22f67a,계룡로 하행(서대전네거리 에서 서대전우체국네거리),one_endpoint_outside_corridor,low,candidate,서대전네거리 명칭은 일치하지만 공식 경로는 계백로여서 핵심 통제구간으로 포함하지 않음,2026-07-15T00:30:00+09:00
+tram-z12-01,djtram-z12-c4c0000bfdc5,계룡로 상행(서대전우체국네거리 에서 서대전네거리),one_endpoint_outside_corridor,low,candidate,서대전네거리 명칭은 일치하지만 공식 경로는 계백로여서 핵심 통제구간으로 포함하지 않음,2026-07-15T00:30:00+09:00
+tram-z12-02,djtram-z12-a1ca3eb69115,충무로 하행(충무네거리 에서 문창초교네거리),standard_adjacent_road_without_exact_place,low,excluded,표준 노드링크상 테미삼거리는 충무로와 접하지만 관측 라벨에 테미 지점이 없고 공식 예정 종료일도 지남,2026-07-15T00:30:00+09:00
+tram-z12-02,djtram-z12-7b9a8ecf09f6,충무로 상행(문창초교네거리 에서 충무네거리),standard_adjacent_road_without_exact_place,low,excluded,표준 노드링크상 테미삼거리는 충무로와 접하지만 관측 라벨에 테미 지점이 없고 공식 예정 종료일도 지남,2026-07-15T00:30:00+09:00

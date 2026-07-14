@@ -1,0 +1,48 @@
+{
+  "claims_allowed": [
+    "collector_operational",
+    "current_observation_monitoring"
+  ],
+  "claims_not_allowed": [
+    "ai_outperforms_baseline",
+    "30_minute_forecast_validated"
+  ],
+  "readiness": {
+    "actual": {
+      "distinct_dates": 1,
+      "first_observed_at_kst": "2026-07-15T00:01:35+09:00",
+      "forecast_examples": 41,
+      "last_observed_at_kst": "2026-07-15T00:51:48+09:00",
+      "median_interval_minutes": 10.0,
+      "records": 287,
+      "segments": 41,
+      "snapshots": 7,
+      "span_hours": 0.837
+    },
+    "checks": {
+      "distinct_dates": false,
+      "forecast_examples": false,
+      "snapshots": false,
+      "span_hours": false
+    },
+    "horizon_minutes": 30,
+    "interpretation": "현재 자료로 AI 성능을 주장하지 않으며 관측 모니터링만 제공",
+    "metric": "speed_kmh",
+    "missing_requirements": [
+      "snapshots",
+      "span_hours",
+      "distinct_dates",
+      "forecast_examples"
+    ],
+    "required": {
+      "distinct_dates": 3,
+      "forecast_examples": 5000,
+      "snapshots": 288,
+      "span_hours": 48.0
+    },
+    "source": "djtram_web",
+    "status": "insufficient_data"
+  },
+  "reason": "insufficient_data",
+  "status": "not_evaluated"
+}

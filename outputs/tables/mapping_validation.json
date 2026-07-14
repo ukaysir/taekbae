@@ -1,0 +1,74 @@
+{
+  "errors": [],
+  "event_summary": [
+    {
+      "candidate_segments": 4,
+      "event_id": "tram-z01-01",
+      "excluded_segments": 0,
+      "high_confidence_segments": 0,
+      "include_pilot_segments": 0,
+      "low_confidence_segments": 4,
+      "mapping_rows": 4,
+      "medium_confidence_segments": 0,
+      "status": "scheduled_active"
+    },
+    {
+      "candidate_segments": 1,
+      "event_id": "tram-z01-02",
+      "excluded_segments": 0,
+      "high_confidence_segments": 2,
+      "include_pilot_segments": 2,
+      "low_confidence_segments": 0,
+      "mapping_rows": 3,
+      "medium_confidence_segments": 1,
+      "status": "scheduled_active"
+    },
+    {
+      "candidate_segments": 3,
+      "event_id": "tram-z01-03",
+      "excluded_segments": 0,
+      "high_confidence_segments": 0,
+      "include_pilot_segments": 0,
+      "low_confidence_segments": 3,
+      "mapping_rows": 3,
+      "medium_confidence_segments": 0,
+      "status": "scheduled_active"
+    },
+    {
+      "candidate_segments": 2,
+      "event_id": "tram-z12-01",
+      "excluded_segments": 0,
+      "high_confidence_segments": 0,
+      "include_pilot_segments": 4,
+      "low_confidence_segments": 2,
+      "mapping_rows": 6,
+      "medium_confidence_segments": 4,
+      "status": "scheduled_active"
+    },
+    {
+      "candidate_segments": 0,
+      "event_id": "tram-z12-02",
+      "excluded_segments": 2,
+      "high_confidence_segments": 0,
+      "include_pilot_segments": 0,
+      "low_confidence_segments": 2,
+      "mapping_rows": 2,
+      "medium_confidence_segments": 0,
+      "status": "scheduled_end_passed_not_completion_verified"
+    }
+  ],
+  "events": 5,
+  "gate_2_rule": "at least two events with high-confidence included segments",
+  "gate_2_status": "partial",
+  "high_confidence_pilot_events": [
+    "tram-z01-02"
+  ],
+  "limitations": [
+    "fallback page has no official link ID or coordinates",
+    "duplicate labels are distinguished by page occurrence order",
+    "candidate mappings require standard node-link or manual map confirmation"
+  ],
+  "mapped_events": 5,
+  "mapping_rows": 18,
+  "status": "valid"
+}

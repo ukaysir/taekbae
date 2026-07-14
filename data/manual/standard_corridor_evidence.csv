@@ -1,0 +1,9 @@
+﻿event_id,direction,sequence,link_id,from_node_id,to_node_id,road_name,lanes,max_speed_kmh,length_m,from_node_name,to_node_name,source_version,source_sha256,derivation
+tram-z12-01,forward,1,1840005901,1840002400,1840002404,계백로,4,50,116.04239974007,서대전역네거리,애슐리홈플러스문화점,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,forward,2,1840005902,1840002404,1840002801,계백로,4,50,220.987147322574,애슐리홈플러스문화점,엔제리너스서대전,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,forward,3,1840124300,1840002801,1840040600,계백로,4,50,84.469608165893,엔제리너스서대전,서대전공원입구,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,forward,4,1840125900,1840040600,1840002800,계백로,4,50,232.516573029399,서대전공원입구,서대전네거리,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,reverse,1,1840125800,1840002800,1840040600,계백로,4,50,227.772300071096,서대전네거리,서대전공원입구,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,reverse,2,1840124200,1840040600,1840002801,계백로,4,50,85.750963551896,서대전공원입구,엔제리너스서대전,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,reverse,3,1840006002,1840002801,1840002404,계백로,4,50,220.833023938505,엔제리너스서대전,애슐리홈플러스문화점,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length
+tram-z12-01,reverse,4,1840006001,1840002404,1840002400,계백로,4,50,115.958890948178,애슐리홈플러스문화점,서대전역네거리,2024-11-29,4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90,directed_shortest_path_by_official_link_length

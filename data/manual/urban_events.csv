@@ -1,0 +1,6 @@
+event_id,zone,contract_section,location,start_date,end_date,control_detail,direction,status_as_of_2026_07_14,source_url,checked_at_kst,link_mapping_status
+tram-z01-01,1,1공구,동부여성가족원~영진로얄아파트,2025-09-01,2026-11-30,3차로 중 1차로 부분통제,중리네거리 방향,scheduled_active,https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=1,2026-07-14T23:55:00+09:00,candidate_low
+tram-z01-02,1,1공구,대덕구 읍내삼거리 일원,2025-05-08,2026-11-30,양방향 1~2개 차로 부분통제,양방향,scheduled_active,https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=1,2026-07-14T23:55:00+09:00,pilot_high
+tram-z01-03,1,1공구,알뜰주유소~성우보육원,2026-01-15,2026-11-30,편도 3차로 중 1차로 부분통제,신탄진 IC 방향,scheduled_active,https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=1,2026-07-14T23:55:00+09:00,candidate_low
+tram-z12-01,12,12공구,중구 서대전역네거리~서대전네거리,2025-12-29,2028-08-31,4차로 중 2차로 부분통제,미기재,scheduled_active,https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=12,2026-07-14T23:55:00+09:00,pilot_medium
+tram-z12-02,12,12공구,중구 테미고개,2026-01-12,2026-05-30,4차로 중 2차로 부분통제,미기재,scheduled_end_passed_not_completion_verified,https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=12,2026-07-14T23:55:00+09:00,excluded_low

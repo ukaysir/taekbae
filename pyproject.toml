@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taekbae-tram-risk"
+version = "0.1.0"
+description = "Daejeon tram construction logistics-risk data pipeline and prototype"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - competition submission" }
+authors = [{ name = "ukaysir" }]
+dependencies = []
+
+[project.optional-dependencies]
+analysis = [
+  "joblib>=1.4,<2",
+  "matplotlib>=3.9,<4",
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<3",
+  "scikit-learn>=1.5,<2",
+]
+catboost = ["catboost>=1.2,<2"]
+pdf = [
+  "pypdf>=5,<6",
+  "pypdfium2>=4.30,<5",
+  "pillow>=12,<13",
+  "reportlab>=4.4,<5",
+]
+browser = ["websocket-client>=1.8,<2"]
+geo = ["pyshp>=2.3,<3"]
+documents = [
+  "Markdown>=3.8,<4",
+  "olefile>=0.47,<1",
+  "pyhwpx>=1.7,<2",
+]
+
+[project.scripts]
+taekbae = "taekbae.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

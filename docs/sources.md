@@ -1,0 +1,62 @@
+# 출처 대장
+
+- 최종 확인일: 2026-07-15 KST
+- 원칙: 공식 공고·제공기관·제품문서를 우선한다. 생성형 AI 답변과 검색결과 요약은 근거로 쓰지 않는다.
+- 상태: `사용`은 실제 산출물에 투입, `비교`는 차별성 검토, `후보`는 접근·호환 검증 전이다.
+
+## 공모전 공식자료
+
+| ID | 자료 | 상태 | 직접 뒷받침하는 내용 |
+|---|---|---|---|
+| C01 | `[붙임1] 공고문_2026년 물류데이터·AI 활용 및 분석 아이디어 공모전.pdf` 및 `붙임1.txt` | 사용 | 지정공모 3, 가점 3점, 평가항목, 자격, 일정, 제출물, 선행사업·수상작 |
+| C02 | `[붙임2] 신청양식_2026년 물류데이터·AI 활용 및 분석 아이디어 공모전.hwp` 및 `붙임2.txt` | 사용 | 서식 1~5, 제안서 10쪽 이내, 보고서 권장 3~5쪽, AI 기록 필드 |
+| C03 | `[붙임3] 신청 가이드_2026년 물류데이터·AI 활용 및 분석 아이디어 공모전.pdf` 및 `붙임3.txt` | 사용 | 참가·제출 절차 요약 |
+| C04 | `[붙임4] 매뉴얼_2026년 물류데이터·AI 활용 및 분석 아이디어 공모전 사업관리시스템(PMS) 신청.pdf` 및 `붙임4.txt` | 사용 | PMS 입력·파일 업로드·임시저장·접수 절차 |
+| C05 | https://www.nlic.go.kr/nlic/noticeBoardView.action?BBSCTT_ID=bord000460&PAGE_CUR=1&command=VIEW | 사용 | 2026-06-19 공식 게시물과 최신 첨부파일 |
+
+첨부 1·2의 로컬 파일은 공식 게시물의 첨부와 해시를 대조했다. 첨부 3·4는 이미지형 PDF를 직접 확인해 수동 전사했으며, 전사본은 원본보다 우선하지 않는다.
+
+## 핵심 공공데이터
+
+| ID | 자료·URL | 상태 | 사용 필드·역할 | 한계·검증 |
+|---|---|---|---|---|
+| D01 | 대전 트램 공구별 공사·교통상황: https://www.daejeon.go.kr/djTram/getConstInfo.do?menuSeq=7699&zone=1 및 `zone=12` | 사용 | 공사명·기간·통제내용, 현재 구간 라벨·상태·속도 | 링크 ID·좌표·통행시간 없음; 동일 라벨 중복 있음 |
+| D02 | 대전 트램 사업현황: https://www.daejeon.go.kr/djTram/contentView.do?menuSeq=7701 | 사용 | 38.8km, 정거장 45개소, 14개 공구와 추진현황 | 계획 일정은 변경 가능; 완료 사실로 표현 금지 |
+| D03 | 대전 트램 추진현황: https://www.daejeon.go.kr/djTram/contentView.do?menuSeq=7698 | 사용 | 공사·시험운행·개통 전환의 계획 근거 | 확인일을 함께 표기 |
+| D04 | 대전광역시 대전교통정보 API: https://www.data.go.kr/data/15157924/openapi.do | 후보 | 링크 ID·속도·통행시간·혼잡·방향 | 2026-07-15 HTTP 403; 현재 분석에는 미사용 |
+| D05 | 기상청 ASOS 시간자료: https://www.data.go.kr/data/15057210/openapi.do | 후보 | 대전 133 기온·강수·풍속·습도 | 2026-07-15 HTTP 403; 현재 분석에는 미사용 |
+| D06 | ITS 표준 노드·링크 조회: https://www.its.go.kr/nodelink/nodelinkStatus?service=inquiryNodelink | 사용 | 노드·방향성 링크·도로명·길이·제한속도 | 2024-11-29 배포본; 실시간값 아님 |
+| D07 | ITS 노드·링크 자료실: https://www.its.go.kr/nodelink/nodelinkRef | 사용 | 공식 배포파일 출처 | 대용량 원본은 Git 제외, 해시 기록 |
+| D08 | 국가교통 데이터 오픈마켓 이용안내: https://docs.bigdata-transportation.kr/open/open_2.html 및 https://docs.bigdata-transportation.kr/open/open_6.html | 후보 | 과거 대전 소통정보 다운로드 절차 | 로그인/구매 후 파일 확인 필요 |
+
+## 실제 산출물과 원자료 계보
+
+| 산출물 | 직접 입력 | 처리 |
+|---|---|---|
+| `data/manual/urban_events.csv` | D01 | 공사 이벤트를 사람이 전사하고 확인시각·상태를 기록 |
+| `data/processed/traffic.sqlite` | D01의 1·12공구 교통표 | 10분 수집, 원응답 gzip·SHA-256 보존, 구간 정규화 |
+| `data/manual/standard_corridor_evidence.csv` | D06·D07 | EPSG:5186 영역 필터 후 공식 링크 길이 방향성 최단경로 |
+| `data/manual/event_segment_mapping.csv` | 공사 이벤트·현재 교통라벨·표준 링크 근거 | 사람이 포함/후보/제외와 신뢰도를 판정 |
+| `outputs/api/current_risk.*` | 최신 관측 | 현재 속도 기반 관측등급; 예측필드는 null |
+| `outputs/api/route_risk.*` | `examples/route_sample.csv` + 최신 관측 | 사용자가 준 경로의 구간 ID와 관측위험을 결합 |
+| `outputs/tables/model_evaluation.json` | SQLite 관측패널 | 최소 데이터 미달 시 평가·학습을 중단하고 주장 잠금 |
+
+## 경쟁·대체재 공식자료
+
+| ID | 자료·URL | 상태 | 확인 범위 |
+|---|---|---|---|
+| K01 | 카카오모빌리티 TMS: https://developers.kakaomobility.com/product/tms.html | 비교 | 대량배송 경로최적화, 배차 자동화, 실시간 도로와 미래 교통량 반영, ETA |
+| K02 | 카카오 미래 운행정보 길찾기: https://developers.kakaomobility.com/guide/navi-api/future.html | 비교 | 미래 출발시각, 대안경로, 도로공사 등 전체차선 통제 반영 |
+| K03 | CJ대한통운 로이스 파슬: https://www.cjlogistics.com/ko/newsroom/news/NR_00001138 | 비교 | 예약·분류·배차·정산 코어, 기사앱, 고객접수, 실시간 운영분석 |
+| K04 | 공모전 붙임1의 2024·2025 수상작 | 비교 | 트램 심야 공동물류, 동적 경로 최적화 등 동일성 배제 |
+| K05 | 공모전 붙임1의 스마트물류 실증화 7개 서비스 | 비교 | 개발 중 플랫폼·신서비스와 동일내용 배제 |
+
+공개 문서에서 특정 기능을 찾지 못했다는 사실은 “그 기능이 없다”는 증거가 아니다. 비교표에는 확인된 공개기능과 미확인 영역을 분리한다.
+
+## 버전·무결성 기록
+
+- 표준 노드·링크 ZIP: 2024-11-29, 125,973,128바이트
+- 표준 노드·링크 SHA-256: `4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90`
+- 공모전 첨부 1·2: 공식 게시물 첨부와 로컬 해시 일치 확인
+- 수집 원응답: `data/raw/<source>/<date>/`에 gzip과 메타데이터로 보존, Git 제외
+- 실시간·공사계획 자료: 제출 직전 다시 확인하고 확인일을 갱신

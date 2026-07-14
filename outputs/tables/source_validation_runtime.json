@@ -1,0 +1,52 @@
+{
+  "tested_at_kst": "2026-07-15T00:58:03.5314126+09:00",
+  "credential": {
+    "environment_variable": "DATA_GO_KR_SERVICE_KEY",
+    "present": true,
+    "value_logged": false
+  },
+  "sources": {
+    "daejeon_openapi": {
+      "dataset_id": "15157924",
+      "endpoint": "https://apis.data.go.kr/6300000/rest/getTrafficInfoAll",
+      "exit_code": 2,
+      "response": {
+        "result_code": "HTTP_403",
+        "result_message": "HTTP request failed",
+        "status": "api_error"
+      },
+      "operational_usable": false
+    },
+    "kma_asos_hourly": {
+      "dataset_id": "15057210",
+      "station_id": 133,
+      "exit_code": 2,
+      "response": {
+        "result_code": "HTTP_403",
+        "result_message": "HTTP request failed",
+        "status": "api_error"
+      },
+      "operational_usable": false
+    },
+    "daejeon_tram_web": {
+      "zones": [
+        1,
+        12
+      ],
+      "exit_code": 0,
+      "latest_run_status": "success",
+      "latest_observed_at_kst": "2026-07-15T00:51:48+09:00",
+      "snapshots": 7,
+      "records": 287,
+      "segments": 41,
+      "operational_usable": true
+    },
+    "standard_node_link": {
+      "version": "2024-11-29",
+      "file_present": true,
+      "sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
+      "expected_sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
+      "hash_verified": true
+    }
+  }
+}
