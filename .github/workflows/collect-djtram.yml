@@ -20,9 +20,9 @@ env:
 
 jobs:
   collect:
-    # The official Daejeon host times out from the Ubuntu-hosted runner pool.
-    # Windows uses a different hosted pool while keeping collection on GitHub.
-    runs-on: windows-latest
+    # The official Daejeon host times out from GitHub's Azure-hosted pools.
+    # macOS uses a separate hosted network while keeping collection on GitHub.
+    runs-on: macos-latest
     timeout-minutes: 8
     steps:
       - name: Check collection window
@@ -31,9 +31,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          end_epoch=$(date -u -d "$COLLECTION_END_AT" +%s)
-          now_epoch=$(date -u +%s)
-          if [ "$now_epoch" -ge "$end_epoch" ]; then
+          if python - <<'PY'
+          import os
+          from datetime import datetime, timezone
+
+          end_at = datetime.fromisoformat(
+              os.environ["COLLECTION_END_AT"].replace("Z", "+00:00")
+          )
+          ended = datetime.now(timezone.utc) >= end_at
+          raise SystemExit(0 if ended else 1)
+          PY
+          then
             echo "collect=false" >> "$GITHUB_OUTPUT"
             echo "Collection window ended at $COLLECTION_END_AT; disabling this workflow."
             gh workflow disable collect-djtram.yml --repo "$GITHUB_REPOSITORY"
