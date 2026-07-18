@@ -29,6 +29,7 @@ outputs/logs/**
 outputs/models/**
 outputs/runtime/**
 outputs/figures/dashboard.png
+/collector/
 *.sqlite
 *.sqlite3
 *.db

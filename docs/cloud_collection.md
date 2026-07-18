@@ -23,7 +23,21 @@ gh run list --repo ukaysir/taekbae --workflow collect-djtram.yml --limit 10
 gh release download cloud-collector-state --repo ukaysir/taekbae --pattern "collector-state.tar.gz" --dir .tmp\cloud-collector
 ~~~
 
-내려받은 자료를 현재 작업본에 복원할 때는 먼저 로컬 수집기를 중지하고 기존 `data/raw`와 `data/processed/traffic.sqlite`를 별도 백업한다. 그다음 압축을 작업 루트에 해제하고 `scripts/finalize_submission.ps1`로 준비상태를 재검증한다.
+## 새 작업환경에서 이어가기
+
+GitHub CLI 인증이 된 Windows 환경에서 다음 순서로 코드와 최신 수집상태를 복원한다. 복원 스크립트는 로컬 수집기·대시보드가 실행 중이면 중단하고, Release 자산의 SHA-256을 검증하며, 기존 원문·DB가 있으면 `.tmp/cloud-restore/` 아래에 먼저 백업한다. 압축을 저장소 루트에 직접 풀지 않는다.
+
+~~~powershell
+git clone https://github.com/ukaysir/taekbae.git
+Set-Location taekbae
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[analysis,pdf]"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\restore_cloud_state.ps1
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -m taekbae quality
+~~~
+
+수집 원문과 SQLite는 이 절차로 복원되지만, 대용량 표준 노드·링크와 상가정보 원본은 Git과 Release에서 의도적으로 제외한다. 최종화를 다시 실행하려면 `data/external/README.md`의 공식 출처에서 같은 판본을 내려받고 기록된 SHA-256을 확인해야 한다.
 
 수집을 조기 중단하려면 다음 명령을 사용한다.
 

@@ -22,6 +22,7 @@ class CloudCollectionWorkflowTests(unittest.TestCase):
         self.assertIn("collector-state.tar.gz", self.workflow)
         self.assertIn("collector-state.previous.tar.gz", self.workflow)
         self.assertIn("--clobber", self.workflow)
+        self.assertIn("--exclude='data/raw/.gitkeep'", self.workflow)
 
     def test_has_bounded_collection_window_and_serial_execution(self) -> None:
         self.assertIn('COLLECTION_END_AT: "2026-07-21T04:00:00Z"', self.workflow)

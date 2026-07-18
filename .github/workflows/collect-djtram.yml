@@ -105,7 +105,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          tar -czf collector-state.tar.gz \
+          tar --exclude='data/raw/.gitkeep' -czf collector-state.tar.gz \
             data/raw \
             data/processed/traffic.sqlite \
             collector/latest-collection.json \
