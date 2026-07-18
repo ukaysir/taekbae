@@ -45,7 +45,7 @@
       "store_source_date": "2026-03-31"
     }
   ],
-  "generated_at_kst": "2026-07-15T02:16:24+09:00",
+  "generated_at_kst": "2026-07-18T16:25:04+09:00",
   "geometry_source": {
     "crs": "EPSG:5186",
     "dataset": "ITS 국가표준 노드·링크",
@@ -199,6 +199,6 @@
     "source_rows": 78607,
     "valid_coordinate_rows": 78607,
     "wrong_region_rows": 0,
-    "zip_sha256": "1cf968e5b3e428bd46ad8f64f6e7c39da52c9b60d023a473b46163577484c6e9"
+    "zip_sha256": "a3b37ae5a5856407374e041b5cf8714b3090036a15e90d879d30f652b698b304"
   }
 }

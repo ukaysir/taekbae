@@ -1011,7 +1011,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     exposure.add_argument(
         "--expected-store-zip-sha256",
-        default="1cf968e5b3e428bd46ad8f64f6e7c39da52c9b60d023a473b46163577484c6e9",
+        default="a3b37ae5a5856407374e041b5cf8714b3090036a15e90d879d30f652b698b304",
     )
     exposure.add_argument(
         "--expected-store-csv-sha256",

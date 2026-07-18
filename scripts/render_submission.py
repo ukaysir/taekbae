@@ -160,6 +160,10 @@ def print_pdf(html: Path, target: Path, profile_dir: Path) -> None:
         "--no-first-run",
         "--no-default-browser-check",
         "--run-all-compositor-stages-before-draw",
+        # Edge 99 uses the legacy switch while current Chromium uses the
+        # replacement below. Supplying both keeps generated PDFs free of the
+        # local file URL/date header across the supported browser versions.
+        "--print-to-pdf-no-header",
         "--no-pdf-header-footer",
         f"--user-data-dir={profile_dir}",
         f"--print-to-pdf={target}",

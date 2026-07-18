@@ -10,7 +10,7 @@
   ],
   "finalized": false,
   "frozen_database_created": false,
-  "generated_at_kst": "2026-07-15T01:56:34+09:00",
+  "generated_at_kst": "2026-07-18T16:25:18+09:00",
   "metric": "speed_kmh",
   "model_evaluated": false,
   "prediction_fields_active": false,
@@ -27,20 +27,22 @@
     "source_validation": "outputs/tables/source_validation_runtime.json",
     "warnings": [
       "optional_source_unavailable:daejeon_openapi",
-      "optional_source_unavailable:kma_asos_hourly"
+      "optional_source_unavailable:kma_asos_hourly",
+      "collection_gaps_over_15_minutes_present",
+      "failed_collection_runs_present"
     ]
   },
   "readiness": {
     "actual": {
       "distinct_dates": 1,
-      "first_observed_at_kst": "2026-07-15T00:01:35+09:00",
-      "forecast_examples": 287,
-      "last_observed_at_kst": "2026-07-15T01:51:48+09:00",
-      "median_interval_minutes": 10.0,
-      "records": 533,
+      "first_observed_at_kst": "2026-07-18T12:50:04+09:00",
+      "forecast_examples": 41,
+      "last_observed_at_kst": "2026-07-18T16:24:38+09:00",
+      "median_interval_minutes": 10.525,
+      "records": 451,
       "segments": 41,
-      "snapshots": 13,
-      "span_hours": 1.837
+      "snapshots": 11,
+      "span_hours": 3.576
     },
     "checks": {
       "distinct_dates": false,

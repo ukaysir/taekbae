@@ -1,89 +1,89 @@
-{
-  "tested_at_kst": "2026-07-15T02:16:40.6793163+09:00",
-  "credential": {
-    "environment_variable": "DATA_GO_KR_SERVICE_KEY",
-    "present": true,
-    "value_logged": false
-  },
-  "sources": {
-    "daejeon_openapi": {
-      "dataset_id": "15157924",
-      "endpoint": "https://apis.data.go.kr/6300000/rest/getTrafficInfoAll",
-      "exit_code": 2,
-      "response": {
-        "result_code": "HTTP_403",
-        "result_message": "HTTP request failed",
-        "status": "api_error"
-      },
-      "operational_usable": false
-    },
-    "kma_asos_hourly": {
-      "dataset_id": "15057210",
-      "station_id": 133,
-      "exit_code": 2,
-      "response": {
-        "result_code": "HTTP_403",
-        "result_message": "HTTP request failed",
-        "status": "api_error"
-      },
-      "operational_usable": false
-    },
-    "daejeon_tram_web": {
-      "zones": [
-        1,
-        12
-      ],
-      "exit_code": 0,
-      "latest_run_status": "success",
-      "latest_observed_at_kst": "2026-07-15T02:11:48+09:00",
-      "snapshots": 15,
-      "records": 615,
-      "segments": 41,
-      "operational_usable": true
-    },
-    "standard_node_link": {
-      "version": "2024-11-29",
-      "file_present": true,
-      "sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
-      "expected_sha256": "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
-      "hash_verified": true
-    },
-    "commercial_exposure": {
-      "dataset_id": "15083033",
-      "source_date": "2026-03-31",
-      "source_rows": 78607,
-      "valid_coordinate_rows": 78607,
-      "event_count": 3,
-      "segment_count": 10,
-      "event_exposure": {
-        "tram-z01-01": 69,
-        "tram-z01-02": 12,
-        "tram-z12-01": 994
-      },
-      "exit_code": 0,
-      "operational_usable": true,
-      "meaning": "250m 내 영업 중 상가 수; 실제 택배 물량·주문량 아님"
-    },
-    "tram_event_scope_mapping": {
-      "exit_code": 0,
-      "evidence_status": "valid",
-      "evidence_rows": 3,
-      "verified_high_scope_events": [
-        "tram-z01-01",
-        "tram-z01-02"
-      ],
-      "qualified_pilot_events": [
-        "tram-z01-01",
-        "tram-z01-02"
-      ],
-      "gate_2_status": "passed",
-      "limitations": [
-        "fallback page has no official link ID or coordinates",
-        "duplicate labels are distinguished by page occurrence order",
-        "medium-confidence duplicate occurrences are included as a conservative exposure set",
-        "scope evidence must pass live URL, text, and asset-hash verification"
-      ],
-      "operational_usable": true
-    }
-  }
+﻿{
+    "tested_at_kst":  "2026-07-18T16:25:17.9632930+09:00",
+    "credential":  {
+                       "environment_variable":  "DATA_GO_KR_SERVICE_KEY",
+                       "present":  false,
+                       "value_logged":  false
+                   },
+    "sources":  {
+                    "daejeon_openapi":  {
+                                            "dataset_id":  "15157924",
+                                            "endpoint":  "https://apis.data.go.kr/6300000/rest/getTrafficInfoAll",
+                                            "exit_code":  3,
+                                            "response":  {
+                                                             "status":  "missing_credential",
+                                                             "result_code":  "MISSING_ENV",
+                                                             "result_message":  "DATA_GO_KR_SERVICE_KEY is not set."
+                                                         },
+                                            "operational_usable":  false
+                                        },
+                    "kma_asos_hourly":  {
+                                            "dataset_id":  "15057210",
+                                            "station_id":  133,
+                                            "exit_code":  3,
+                                            "response":  {
+                                                             "status":  "missing_credential",
+                                                             "result_code":  "MISSING_ENV",
+                                                             "result_message":  "DATA_GO_KR_SERVICE_KEY is not set."
+                                                         },
+                                            "operational_usable":  false
+                                        },
+                    "daejeon_tram_web":  {
+                                             "zones":  [
+                                                           1,
+                                                           12
+                                                       ],
+                                             "exit_code":  0,
+                                             "latest_run_status":  "success",
+                                             "latest_observed_at_kst":  "2026-07-18T16:24:38+09:00",
+                                             "snapshots":  11,
+                                             "records":  451,
+                                             "segments":  41,
+                                             "operational_usable":  true
+                                         },
+                    "standard_node_link":  {
+                                               "version":  "2024-11-29",
+                                               "file_present":  true,
+                                               "sha256":  "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
+                                               "expected_sha256":  "4ddd6632756204c7fc8a429bfc57a91215f38138f1e78e65d65778e4b9187e90",
+                                               "hash_verified":  true
+                                           },
+                    "commercial_exposure":  {
+                                                "dataset_id":  "15083033",
+                                                "source_date":  "2026-03-31",
+                                                "source_rows":  78607,
+                                                "valid_coordinate_rows":  78607,
+                                                "event_count":  3,
+                                                "segment_count":  10,
+                                                "event_exposure":  {
+                                                                       "tram-z01-01":  69,
+                                                                       "tram-z01-02":  12,
+                                                                       "tram-z12-01":  994
+                                                                   },
+                                                "exit_code":  0,
+                                                "operational_usable":  true,
+                                                "meaning":  "250m ???곸뾽 以??곴? ?? ?ㅼ젣 ?앸같 臾쇰웾쨌二쇰Ц???꾨떂"
+                                            },
+                    "tram_event_scope_mapping":  {
+                                                     "exit_code":  0,
+                                                     "evidence_status":  "valid",
+                                                     "evidence_rows":  3,
+                                                     "verified_high_scope_events":  [
+                                                                                        "tram-z01-01",
+                                                                                        "tram-z01-02"
+                                                                                    ],
+                                                     "qualified_pilot_events":  [
+                                                                                    "tram-z01-01",
+                                                                                    "tram-z01-02"
+                                                                                ],
+                                                     "gate_2_status":  "passed",
+                                                     "limitations":  [
+                                                                         "fallback page has no official link ID or coordinates",
+                                                                         "duplicate labels are distinguished by page occurrence order",
+                                                                         "medium-confidence duplicate occurrences are included as a conservative exposure set",
+                                                                         "scope evidence must pass live URL, text, and asset-hash verification"
+                                                                     ],
+                                                     "operational_usable":  true
+                                                 }
+                }
 }
