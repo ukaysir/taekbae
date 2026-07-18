@@ -25,6 +25,7 @@ class CloudCollectionWorkflowTests(unittest.TestCase):
 
     def test_has_bounded_collection_window_and_serial_execution(self) -> None:
         self.assertIn('COLLECTION_END_AT: "2026-07-21T04:00:00Z"', self.workflow)
+        self.assertIn("runs-on: windows-latest", self.workflow)
         self.assertIn("cancel-in-progress: false", self.workflow)
         self.assertIn("gh workflow disable collect-djtram.yml", self.workflow)
 

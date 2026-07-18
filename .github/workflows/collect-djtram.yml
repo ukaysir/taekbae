@@ -20,7 +20,9 @@ env:
 
 jobs:
   collect:
-    runs-on: ubuntu-latest
+    # The official Daejeon host times out from the Ubuntu-hosted runner pool.
+    # Windows uses a different hosted pool while keeping collection on GitHub.
+    runs-on: windows-latest
     timeout-minutes: 8
     steps:
       - name: Check collection window
