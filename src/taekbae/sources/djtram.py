@@ -3,6 +3,9 @@ from __future__ import annotations
 import hashlib
 import html
 import re
+import ssl
+import urllib.error
+import urllib.parse
 import urllib.request
 from collections import Counter
 from dataclasses import dataclass
@@ -26,6 +29,8 @@ _LABEL_PATTERN = re.compile(
     r"^(?P<road>.+?)\s+(?P<direction>상행|하행)"
     r"(?:\((?P<context>.*)\))?$"
 )
+_DJTRAM_HOST = "www.daejeon.go.kr"
+_WEAK_CERTIFICATE_KEY_ERROR = "certificate key too weak"
 
 
 class DjTramParseError(RuntimeError):
@@ -40,6 +45,29 @@ class DjTramPage:
     raw: bytes
     observations: tuple[TrafficObservation, ...]
     duplicate_label_count: int
+
+
+def _open_tram_request(
+    request: urllib.request.Request, *, timeout: int
+):
+    try:
+        return urllib.request.urlopen(request, timeout=timeout)
+    except urllib.error.URLError as exc:
+        reason = exc.reason
+        hostname = urllib.parse.urlparse(request.full_url).hostname
+        if (
+            hostname != _DJTRAM_HOST
+            or not isinstance(reason, ssl.SSLCertVerificationError)
+            or _WEAK_CERTIFICATE_KEY_ERROR not in str(reason).lower()
+        ):
+            raise
+
+        # The official Daejeon host currently uses a certificate key rejected by
+        # OpenSSL's default security level. Keep CA and hostname verification on,
+        # and relax only the key-strength policy for this exact official host.
+        context = ssl.create_default_context()
+        context.set_ciphers("DEFAULT:@SECLEVEL=1")
+        return urllib.request.urlopen(request, timeout=timeout, context=context)
 
 
 def _clean_text(value: str) -> str:
@@ -128,7 +156,7 @@ def parse_zone_page(
 def fetch_zone(zone: int, *, observed_at: datetime | None = None, timeout: int = 30) -> DjTramPage:
     url = DJTRAM_ZONE_ENDPOINT.format(zone=zone)
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    with _open_tram_request(request, timeout=timeout) as response:
         raw = response.read()
         status = getattr(response, "status", 200)
     if status != 200:

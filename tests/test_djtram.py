@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import unittest
+import ssl
+import urllib.error
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 from taekbae.config import KST
-from taekbae.sources.djtram import DjTramParseError, parse_zone_page
+from taekbae.sources.djtram import DjTramParseError, fetch_zone, parse_zone_page
 
 
 SAMPLE = """
@@ -42,6 +45,40 @@ class DjTramParserTests(unittest.TestCase):
     def test_rejects_invalid_zone(self) -> None:
         with self.assertRaises(ValueError):
             parse_zone_page(SAMPLE, zone=15)
+
+    def test_fetch_retries_official_host_with_verified_legacy_key_context(self) -> None:
+        certificate_error = ssl.SSLCertVerificationError(
+            1, "certificate verify failed: EE certificate key too weak"
+        )
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = SAMPLE
+        response.status = 200
+
+        with patch(
+            "taekbae.sources.djtram.urllib.request.urlopen",
+            side_effect=[urllib.error.URLError(certificate_error), response],
+        ) as urlopen:
+            page = fetch_zone(1)
+
+        self.assertEqual(2, len(page.observations))
+        self.assertEqual(2, urlopen.call_count)
+        retry_context = urlopen.call_args_list[1].kwargs["context"]
+        self.assertTrue(retry_context.check_hostname)
+        self.assertEqual(ssl.CERT_REQUIRED, retry_context.verify_mode)
+
+    def test_fetch_does_not_relax_other_certificate_errors(self) -> None:
+        certificate_error = ssl.SSLCertVerificationError(
+            1, "certificate verify failed: hostname mismatch"
+        )
+        with patch(
+            "taekbae.sources.djtram.urllib.request.urlopen",
+            side_effect=urllib.error.URLError(certificate_error),
+        ) as urlopen:
+            with self.assertRaises(urllib.error.URLError):
+                fetch_zone(1)
+
+        self.assertEqual(1, urlopen.call_count)
 
 
 if __name__ == "__main__":
