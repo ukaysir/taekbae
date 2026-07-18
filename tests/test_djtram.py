@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import unittest
 import ssl
-import urllib.error
+import urllib.request
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from taekbae.config import KST
-from taekbae.sources.djtram import DjTramParseError, fetch_zone, parse_zone_page
+from taekbae.sources.djtram import (
+    DjTramParseError,
+    _open_tram_request,
+    fetch_zone,
+    parse_zone_page,
+)
 
 
 SAMPLE = """
@@ -46,10 +51,7 @@ class DjTramParserTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_zone_page(SAMPLE, zone=15)
 
-    def test_fetch_retries_official_host_with_verified_legacy_key_context(self) -> None:
-        certificate_error = ssl.SSLCertVerificationError(
-            1, "certificate verify failed: EE certificate key too weak"
-        )
+    def test_fetch_uses_verified_legacy_key_context_for_official_host(self) -> None:
         response = MagicMock()
         response.__enter__.return_value = response
         response.read.return_value = SAMPLE
@@ -57,28 +59,28 @@ class DjTramParserTests(unittest.TestCase):
 
         with patch(
             "taekbae.sources.djtram.urllib.request.urlopen",
-            side_effect=[urllib.error.URLError(certificate_error), response],
+            return_value=response,
         ) as urlopen:
             page = fetch_zone(1)
 
         self.assertEqual(2, len(page.observations))
-        self.assertEqual(2, urlopen.call_count)
-        retry_context = urlopen.call_args_list[1].kwargs["context"]
-        self.assertTrue(retry_context.check_hostname)
-        self.assertEqual(ssl.CERT_REQUIRED, retry_context.verify_mode)
+        self.assertEqual(1, urlopen.call_count)
+        context = urlopen.call_args.kwargs["context"]
+        self.assertTrue(context.check_hostname)
+        self.assertEqual(ssl.CERT_REQUIRED, context.verify_mode)
 
-    def test_fetch_does_not_relax_other_certificate_errors(self) -> None:
-        certificate_error = ssl.SSLCertVerificationError(
-            1, "certificate verify failed: hostname mismatch"
-        )
+    def test_non_official_host_uses_default_tls_settings(self) -> None:
+        request = urllib.request.Request("https://example.com/")
+        response = MagicMock()
         with patch(
             "taekbae.sources.djtram.urllib.request.urlopen",
-            side_effect=urllib.error.URLError(certificate_error),
+            return_value=response,
         ) as urlopen:
-            with self.assertRaises(urllib.error.URLError):
-                fetch_zone(1)
+            returned = _open_tram_request(request, timeout=7)
 
+        self.assertIs(response, returned)
         self.assertEqual(1, urlopen.call_count)
+        urlopen.assert_called_once_with(request, timeout=7)
 
 
 if __name__ == "__main__":
