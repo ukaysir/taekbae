@@ -1,10 +1,11 @@
 # GitHub Actions 클라우드 수집
 
-로컬 PC를 계속 켜두지 않아도 `.github/workflows/collect-djtram.yml`이 GitHub 호스팅 실행기에서 1·12공구를 수집한다.
+로컬 PC를 계속 켜두지 않아도 `.github/workflows/collect-djtram.yml`이 GitHub macOS 호스팅 실행기에서 1·12공구를 수집한다.
 
 ## 운영 계약
 
 - 실행 간격: 매시 7·17·27·37·47·57분(UTC 기준, 약 10분 간격)
+- 실행 환경: `macos-latest`(Ubuntu·Windows 호스팅 풀에서는 대전시 공식 호스트 연결이 타임아웃됨)
 - 수집 종료: 2026-07-21 04:00 UTC(2026-07-21 13:00 KST) 이후 워크플로 자동 비활성화
 - 상태 저장: `cloud-collector-state` 초안 Release의 `collector-state.tar.gz`
 - 복구본: 직전 성공 상태를 `collector-state.previous.tar.gz`로 함께 보존
@@ -12,6 +13,8 @@
 - 제외 자료: API 키, `.env`, `.private`, 참가자 개인정보, 대형 외부 데이터
 
 GitHub 예약 실행은 정확한 시각을 보장하지 않으므로 최소 48시간보다 긴 약 72시간 창을 사용한다. 각 실행은 이전 성공 자산을 복원하고 한 스냅숏을 추가한 뒤 새 자산을 업로드한다. 한 실행이 실패하면 Release의 최신본 또는 직전 백업본에서 다음 실행을 재개한다.
+
+2026-07-18 13:20 KST 수동 검증 실행에서 1공구 9행·12공구 32행을 추가하고 Release 자산 교체까지 성공했다. 업로드된 최신 자산을 별도 폴더에 다시 내려받아 5스냅숏·205행, SQLite 조회, 수집·품질 JSON, GitHub 자산 SHA-256 일치를 확인했다.
 
 ## 상태 확인
 
