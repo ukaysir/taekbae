@@ -4,7 +4,6 @@ import hashlib
 import html
 import re
 import ssl
-import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
@@ -30,7 +29,6 @@ _LABEL_PATTERN = re.compile(
     r"(?:\((?P<context>.*)\))?$"
 )
 _DJTRAM_HOST = "www.daejeon.go.kr"
-_WEAK_CERTIFICATE_KEY_ERROR = "certificate key too weak"
 
 
 class DjTramParseError(RuntimeError):
@@ -50,24 +48,16 @@ class DjTramPage:
 def _open_tram_request(
     request: urllib.request.Request, *, timeout: int
 ):
-    try:
-        return urllib.request.urlopen(request, timeout=timeout)
-    except urllib.error.URLError as exc:
-        reason = exc.reason
-        hostname = urllib.parse.urlparse(request.full_url).hostname
-        if (
-            hostname != _DJTRAM_HOST
-            or not isinstance(reason, ssl.SSLCertVerificationError)
-            or _WEAK_CERTIFICATE_KEY_ERROR not in str(reason).lower()
-        ):
-            raise
-
+    hostname = urllib.parse.urlparse(request.full_url).hostname
+    if hostname == _DJTRAM_HOST:
         # The official Daejeon host currently uses a certificate key rejected by
         # OpenSSL's default security level. Keep CA and hostname verification on,
         # and relax only the key-strength policy for this exact official host.
         context = ssl.create_default_context()
         context.set_ciphers("DEFAULT:@SECLEVEL=1")
         return urllib.request.urlopen(request, timeout=timeout, context=context)
+
+    return urllib.request.urlopen(request, timeout=timeout)
 
 
 def _clean_text(value: str) -> str:
