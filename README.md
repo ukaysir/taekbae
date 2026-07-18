@@ -55,6 +55,8 @@ python -m venv .venv
 
 로컬 PC를 계속 켜둘 수 없을 때는 GitHub Actions가 약 10분 간격으로 수집하고 초안 Release 자산에 최신·직전 상태를 보존한다. 실행기간, 복구와 중단 방법은 [GitHub Actions 클라우드 수집](docs/cloud_collection.md)을 따른다.
 
+새 PC나 새 작업환경에서는 같은 문서의 `새 작업환경에서 이어가기` 절차와 `scripts/restore_cloud_state.ps1`을 사용한다. Release 압축을 저장소 루트에 직접 풀지 않는다.
+
 48시간 자료 게이트와 최종 동결은 한 명령으로 재검증한다.
 
 ~~~powershell
