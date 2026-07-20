@@ -1,43 +1,20 @@
-# Python
 .venv/
 __pycache__/
 *.py[cod]
-*.egg-info/
-.pytest_cache/
 .tmp/
-.coverage
-htmlcov/
-
-# Credentials and local configuration
 .env
 .env.*
-!.env.example
 secrets.*
 *.key
 .private/
-outputs/tables/submission_preflight.json
-outputs/submission/final/
-
-# Collected and generated data
-data/raw/**
-!data/raw/.gitkeep
-data/processed/**
-!data/processed/.gitkeep
-data/external/**
-!data/external/README.md
-outputs/logs/**
-outputs/models/**
-outputs/runtime/**
-outputs/figures/dashboard.png
-/collector/
+02_submission/final/
 *.sqlite
 *.sqlite3
 *.db
 *.joblib
 *.pkl
-
-# Local editor and OS files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+_workspace/

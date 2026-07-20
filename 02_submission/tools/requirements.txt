@@ -1,0 +1,4 @@
+markdown
+pypdf
+pypdfium2
+reportlab
