@@ -76,7 +76,6 @@ body.proposal h2:last-of-type ~ ol li {
   margin: 0.5mm 0;
   break-inside: avoid;
 }
-body.report h2:nth-of-type(3), body.report h2:nth-of-type(5) { break-before: page; }
 h3 {
   margin: 3.5mm 0 1.4mm;
   color: #344054;
@@ -193,7 +192,7 @@ def add_page_numbers(source: Path, output: Path) -> int:
         writer.add_page(page)
     writer.add_metadata(
         {
-            "/Title": "대전 트램 공사구간의 도심배송 위험 관측·예보 모듈",
+            "/Title": "대전 트램 공사정보를 배송위험으로 전환하는 근거제약형 AI 모듈",
             "/Author": "[participant input required]",
             "/Subject": "2026 logistics data and AI competition draft",
         }
