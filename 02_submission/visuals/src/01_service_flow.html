@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1600, initial-scale=1">
+  <title>서비스 작동 흐름</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .flow-card {
+      margin-top: 30px;
+      padding: 26px 28px 24px;
+    }
+    .flow-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .flow-label h2 { margin: 0; font-size: 17px; letter-spacing: -0.03em; }
+    .flow-label span { color: var(--muted); font-size: 13px; }
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 42px 1fr 42px 1fr 42px 1fr 42px 1fr;
+      align-items: stretch;
+      min-height: 285px;
+    }
+    .step {
+      position: relative;
+      padding: 22px 19px 18px;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: #fbfdff;
+    }
+    .step.ai { border-color: #b9cef9; background: var(--blue-soft); }
+    .step.human { border-color: transparent; background: linear-gradient(150deg, #2466ef, #163ebd); color: white; box-shadow: 0 15px 28px rgba(21, 94, 239, 0.22); }
+    .step.result { border-color: #b8e8d8; background: var(--mint-soft); }
+    .num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      background: #e7edf5;
+      color: #3f5065;
+      font-size: 14px;
+      font-weight: 850;
+    }
+    .ai .num { background: white; color: var(--blue); }
+    .human .num { background: rgba(255,255,255,.18); color: white; }
+    .result .num { background: white; color: var(--mint); }
+    .step h3 { margin: 0 0 10px; font-size: 20px; line-height: 1.25; letter-spacing: -0.04em; }
+    .step p { margin: 0; color: #657287; font-size: 14px; line-height: 1.55; }
+    .human p { color: rgba(255,255,255,.82); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+    .human .pill { background: rgba(255,255,255,.15); color: white; }
+    .arrow { display: flex; align-items: center; justify-content: center; color: #9aabc0; font-size: 30px; font-weight: 300; }
+    .principle {
+      display: grid;
+      grid-template-columns: 240px 1fr 1fr 1fr;
+      align-items: center;
+      gap: 0;
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid #d5dfec;
+      border-radius: 18px;
+      background: white;
+    }
+    .principle-title { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: 18px 22px; background: #101a2b; color: white; }
+    .principle-title small { color: #a9bad4; font-size: 12px; font-weight: 700; }
+    .principle-title strong { margin-top: 6px; font-size: 18px; }
+    .principle-item { padding: 16px 23px; border-left: 1px solid #e2e8f0; }
+    .principle-item strong { display: block; margin-bottom: 5px; font-size: 15px; }
+    .principle-item span { color: #68768a; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="canvas">
+    <span class="eyebrow">대전 트램 × 도시배송 · 서비스 구조</span>
+    <h1 class="title">공사 공지를 읽고, <span class="accent">사람이 확인한 뒤</span> 배송업무에 연결합니다</h1>
+    <p class="subtitle">AI는 공식자료를 빠르게 정리하고 근거를 설명합니다. 최종 도로구간과 배차 판단은 담당자가 맡습니다.</p>
+
+    <section class="card flow-card">
+      <div class="flow-label">
+        <h2>근거제약형 AI 모듈의 5단계 작동 흐름</h2>
+        <span>원자료 → AI 정리 → 사람 검증 → 데이터 결합 → 업무 활용</span>
+      </div>
+      <div class="flow">
+        <article class="step">
+          <div class="num">01</div>
+          <h3>공식 공사자료</h3>
+          <p>대전시 공지문과 공사 이미지에서 실제 공사조건을 확인합니다.</p>
+          <div class="tag-row"><span class="pill slate">위치</span><span class="pill slate">기간</span><span class="pill slate">차로통제</span></div>
+        </article>
+        <div class="arrow">→</div>
+        <article class="step ai">
+          <div class="num">02</div>
+          <h3>AI 항목 정리</h3>
+          <p>도로명·방향·기간·통제차로를 표준 항목으로 만들고 자료번호를 붙입니다.</p>
+          <div class="tag-row"><span class="pill blue">공사자료-02</span><span class="pill blue">근거 연결</span></div>
+        </article>
+        <div class="arrow">→</div>
+        <article class="step human">
+          <div class="num">03</div>
+          <h3>담당자 구간 확인</h3>
+          <p>공식 지도와 방향별 도로 후보를 대조해 사용·추가 확인·제외를 결정합니다.</p>
+          <div class="tag-row"><span class="pill">사람 확인 필수</span></div>
+        </article>
+        <div class="arrow">→</div>
+        <article class="step">
+          <div class="num">04</div>
+          <h3>데이터 결합</h3>
+          <p>확정 구간에 현재 교통상태와 반경 250m 영업 중 상가 수를 붙입니다.</p>
+          <div class="tag-row"><span class="pill slate">교통상태</span><span class="pill slate">주변 상가</span></div>
+        </article>
+        <div class="arrow">→</div>
+        <article class="step result">
+          <div class="num">05</div>
+          <h3>배송위험 요약</h3>
+          <p>배차 전 확인할 공사정보를 보여주고 기존 TMS용 표 파일을 제공합니다.</p>
+          <div class="tag-row"><span class="pill mint">근거 보기</span><span class="pill mint">예측 아님</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="principle">
+      <div class="principle-title"><small>CORE PRINCIPLE</small><strong>빠른 정리, 책임 있는 확인</strong></div>
+      <div class="principle-item"><strong>공식자료 안에서만 답변</strong><span>확인되지 않은 숫자·장소는 생성하지 않음</span></div>
+      <div class="principle-item"><strong>모호하면 보류</strong><span>억지 연결 대신 ‘추가 확인 필요’로 전달</span></div>
+      <div class="principle-item"><strong>기존 시스템 보완</strong><span>자동배차·경로결정을 대신하지 않음</span></div>
+    </section>
+
+    <footer class="footer-note"><span><strong>그림 1.</strong> 제안 서비스의 데이터·AI·사람 역할 흐름</span><span>제안 단계의 구조도이며 운영서비스·검증된 성과가 아닙니다.</span></footer>
+  </main>
+</body>
+</html>
+

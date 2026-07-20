@@ -35,6 +35,11 @@ REQUIRED_TEXT = {
     ],
 }
 
+REQUIRED_IMAGE_COUNT = {
+    "proposal": 3,
+    "report": 2,
+}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -47,10 +52,15 @@ def main() -> int:
     render_dir = args.render_dir.resolve()
     reader = PdfReader(str(pdf_path))
     page_count = len(reader.pages)
+    image_count = sum(len(page.images) for page in reader.pages)
     expected_range = (1, 10) if args.type == "proposal" else (3, 5)
     errors: list[str] = []
     if not expected_range[0] <= page_count <= expected_range[1]:
         errors.append(f"page_count {page_count} outside {expected_range}")
+    if image_count < REQUIRED_IMAGE_COUNT[args.type]:
+        errors.append(
+            f"image_count {image_count} below required {REQUIRED_IMAGE_COUNT[args.type]}"
+        )
 
     page_texts = [(page.extract_text() or "").strip() for page in reader.pages]
     for index, text in enumerate(page_texts, start=1):
@@ -95,6 +105,7 @@ def main() -> int:
         "input": str(pdf_path),
         "document_type": args.type,
         "pages": page_count,
+        "images": image_count,
         "expected_page_range": list(expected_range),
         "errors": errors,
         "rendered_pages": rendered,

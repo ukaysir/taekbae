@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import io
+import mimetypes
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -34,18 +37,6 @@ body {
   overflow-wrap: anywhere;
 }
 body.report { font-size: 8.55pt; line-height: 1.40; }
-body::before {
-  content: "DRAFT · 검토용";
-  position: fixed;
-  z-index: -1;
-  left: 22%;
-  top: 43%;
-  transform: rotate(-28deg);
-  color: rgba(180, 35, 24, 0.07);
-  font-size: 48pt;
-  font-weight: 800;
-  white-space: nowrap;
-}
 h1 {
   margin: 0 0 5mm;
   padding-bottom: 3mm;
@@ -120,7 +111,30 @@ code {
 pre { padding: 3mm; background: #101828; color: white; white-space: pre-wrap; }
 a { color: #175cd3; text-decoration: none; }
 strong { color: #101828; }
+figure {
+  margin: 3mm 0 4mm;
+  padding: 2.2mm;
+  border: 0.5px solid #d0d5dd;
+  border-radius: 2.5mm;
+  background: #f8fafc;
+  break-inside: avoid;
+}
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.5mm;
+}
+figcaption {
+  margin-top: 1.6mm;
+  color: #667085;
+  font-size: 7.7pt;
+  line-height: 1.35;
+}
 """
+
+
+IMAGE_SOURCE_PATTERN = re.compile(r'(<img\b[^>]*\bsrc=")([^"]+)(")', re.IGNORECASE)
 
 
 def edge_path() -> Path:
@@ -130,6 +144,25 @@ def edge_path() -> Path:
     raise FileNotFoundError("Microsoft Edge was not found")
 
 
+def embed_local_images(content: str, source: Path) -> str:
+    def replacement(match: re.Match[str]) -> str:
+        image_ref = match.group(2)
+        if image_ref.startswith(("data:", "http://", "https://")):
+            return match.group(0)
+        image_path = (source.parent / image_ref).resolve()
+        try:
+            image_path.relative_to(REPO_ROOT)
+        except ValueError as error:
+            raise ValueError(f"image path is outside repository: {image_ref}") from error
+        if not image_path.is_file():
+            raise FileNotFoundError(f"image not found: {image_path}")
+        mime_type = mimetypes.guess_type(image_path.name)[0] or "application/octet-stream"
+        encoded = base64.b64encode(image_path.read_bytes()).decode("ascii")
+        return f"{match.group(1)}data:{mime_type};base64,{encoded}{match.group(3)}"
+
+    return IMAGE_SOURCE_PATTERN.sub(replacement, content)
+
+
 def build_html(source: Path, document_type: str) -> str:
     source_text = source.read_text(encoding="utf-8")
     content = markdown.markdown(
@@ -137,7 +170,8 @@ def build_html(source: Path, document_type: str) -> str:
         extensions=["tables", "fenced_code", "sane_lists"],
         output_format="html5",
     )
-    title = "제안서 초안" if document_type == "proposal" else "분석 과정 보고서 초안"
+    content = embed_local_images(content, source)
+    title = "제안서 원고" if document_type == "proposal" else "분석 과정 보고서 원고"
     return f"""<!doctype html>
 <html lang="ko">
 <head>

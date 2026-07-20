@@ -1,0 +1,134 @@
+:root {
+  --ink: #111827;
+  --muted: #64748b;
+  --line: #d9e2ef;
+  --paper: #ffffff;
+  --ground: #f3f6fa;
+  --blue: #155eef;
+  --blue-deep: #1939b7;
+  --blue-soft: #edf4ff;
+  --mint: #16a77a;
+  --mint-soft: #eafaf4;
+  --orange: #ed7a1a;
+  --orange-soft: #fff4e8;
+  --slate-soft: #eef2f6;
+  --shadow: 0 18px 45px rgba(22, 40, 74, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html,
+body {
+  width: 1600px;
+  height: 900px;
+  margin: 0;
+  overflow: hidden;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  word-break: keep-all;
+}
+
+body { letter-spacing: -0.025em; }
+
+.canvas {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  padding: 44px 64px 28px;
+  background:
+    radial-gradient(circle at 92% 3%, rgba(21, 94, 239, 0.07), transparent 24%),
+    var(--ground);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 6px 12px;
+  border: 1px solid #c8d7f0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #335078;
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: 0;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 4px var(--blue-soft);
+}
+
+.title {
+  margin: 17px 0 8px;
+  color: #0b1220;
+  font-size: 42px;
+  font-weight: 850;
+  line-height: 1.13;
+  letter-spacing: -0.055em;
+}
+
+.title .accent { color: var(--blue); }
+
+.subtitle {
+  margin: 0;
+  color: #53637a;
+  font-size: 18px;
+  font-weight: 540;
+  line-height: 1.45;
+}
+
+.card {
+  border: 1px solid rgba(207, 218, 233, 0.92);
+  border-radius: 24px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pill.blue { background: var(--blue-soft); color: #1648b7; }
+.pill.mint { background: var(--mint-soft); color: #08795b; }
+.pill.orange { background: var(--orange-soft); color: #a54a0c; }
+.pill.slate { background: var(--slate-soft); color: #526174; }
+
+.footer-note {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  bottom: 19px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #7a8799;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.footer-note strong { color: #40526b; }
+
+.source-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 7px 2px;
+  border-radius: 50%;
+  background: #a8b3c3;
+}
+

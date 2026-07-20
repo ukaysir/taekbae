@@ -1,4 +1,5 @@
 markdown
 pypdf
 pypdfium2
+pywin32
 reportlab
