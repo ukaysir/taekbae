@@ -7,7 +7,6 @@ __pycache__/
 secrets.*
 *.key
 .private/
-02_submission/final/
 *.sqlite
 *.sqlite3
 *.db
