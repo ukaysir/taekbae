@@ -63,12 +63,12 @@
   <main class="canvas">
     <span class="eyebrow">화면 B · 공사정보·도로구간 검증</span>
     <h1 class="title">AI가 정리하고, 담당자가 <span class="accent">원문과 도로 방향을 확인</span>합니다</h1>
-    <p class="subtitle">읍내삼거리 사례 · 공사자료 1건과 연결 후보 3개를 한 화면에서 검토하는 개념 시안</p>
+    <p class="subtitle">읍내삼거리 사례 · 연결 후보를 시범 결합·담당자 재검증·연결 차단으로 통제하는 근거 게이트</p>
 
     <section class="card app">
       <header class="appbar">
         <div class="brand"><span class="brandmark">T</span> 트램 공사 배송영향 검토</div>
-        <div class="stats"><span class="stat">전체 후보 <b>18</b></span><span class="stat">사용 <b>10</b></span><span class="stat">추가 확인 <b>6</b></span><span class="stat">제외 <b>2</b></span></div>
+        <div class="stats"><span class="stat">전체 후보 <b>18</b></span><span class="stat">시범 결합 <b>10</b></span><span class="stat">담당자 재검증 <b>6</b></span><span class="stat">연결 차단 <b>2</b></span></div>
       </header>
       <div class="workspace">
         <section class="panel">
@@ -101,26 +101,25 @@
           <div class="panel-head"><h2>③ 방향별 도로 후보</h2><span class="pill mint">사람이 최종 결정</span></div>
           <article class="candidate selected">
             <div class="candidate-top"><div><h3>계족로 상행(읍내삼거리)</h3><p>공구·도로·방향·읍내삼거리 명칭을 공식자료에서 직접 확인</p></div><span class="pill mint">근거 높음</span></div>
-            <div class="decision"><span class="active">✓ 이 구간 사용</span><span>추가 확인</span><span>제외</span></div>
+            <div class="decision"><span class="active">✓ 시범 결합</span><span>담당자 재검증</span><span>연결 차단</span></div>
           </article>
           <article class="candidate selected">
             <div class="candidate-top"><div><h3>계족로 하행(읍내삼거리)</h3><p>양방향 통제 이벤트와 반대 방향 쌍을 함께 확인</p></div><span class="pill mint">근거 높음</span></div>
-            <div class="decision"><span class="active">✓ 이 구간 사용</span><span>추가 확인</span><span>제외</span></div>
+            <div class="decision"><span class="active">✓ 시범 결합</span><span>담당자 재검증</span><span>연결 차단</span></div>
           </article>
           <article class="candidate review">
             <div class="candidate-top"><div><h3>신탄진로 상행(읍내삼거리→대한통운)</h3><p>출발점은 일치하지만 공사 통제도로 범위 확인이 남음</p></div><span class="pill orange">근거 중간</span></div>
-            <div class="decision"><span>이 구간 사용</span><span class="pending">! 추가 확인</span><span>제외</span></div>
+            <div class="decision"><span>시범 결합</span><span class="pending">! 담당자 재검증</span><span>연결 차단</span></div>
           </article>
         </section>
       </div>
       <footer class="actionbar">
-        <div class="action-msg"><span class="check">✓</span><span><strong>확정값만 다음 단계로 전달</strong> · 교통상태와 주변 상가 수를 결합해 배송위험 요약 생성</span></div>
+        <div class="action-msg"><span class="check">✓</span><span><strong>근거 게이트를 통과한 구간만 전달</strong> · 현재 교통과 잠재 배송노출을 결합해 TMS 경로 대조정보 생성</span></div>
         <div class="buttons"><button>검토 의견 저장</button><button class="primary">선택 구간 승인</button></div>
       </footer>
     </section>
 
-    <footer class="footer-note"><span><strong>그림 2.</strong> 읍내삼거리 공사정보·도로구간 검증 화면</span><span>화면 예시이며 운영서비스가 아닙니다. 수치는 고정 분석결과 기준입니다.</span></footer>
+    <footer class="footer-note"><span><strong>그림 2.</strong> 읍내삼거리 공사정보·도로구간 근거 게이트</span><span>화면 예시이며 운영서비스가 아닙니다. 수치는 고정 분석결과 기준입니다.</span></footer>
   </main>
 </body>
 </html>
-
