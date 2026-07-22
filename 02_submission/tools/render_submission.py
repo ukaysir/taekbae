@@ -226,7 +226,7 @@ def add_page_numbers(source: Path, output: Path) -> int:
         writer.add_page(page)
     writer.add_metadata(
         {
-            "/Title": "대전 트램 공사정보를 배송위험으로 전환하는 근거제약형 AI 모듈",
+            "/Title": "대전 트램 공사공지를 배송경로 판단정보로 전환하는 근거제약형 AI 모듈",
             "/Author": "[participant input required]",
             "/Subject": "2026 logistics data and AI competition draft",
         }
